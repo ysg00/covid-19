@@ -10,9 +10,11 @@
 
 # production
 /build
+/src/data
 
 # misc
 .DS_Store
+.vscode
 .env.local
 .env.development.local
 .env.test.local
