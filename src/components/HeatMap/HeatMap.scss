@@ -1,0 +1,18 @@
+.heat-map {
+  width: 100%;
+  height: 650px;
+  min-width: 500px;
+
+  .ol-popup {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 1px 4px, rgba(0,0,0,0.2);
+    border-radius: 6px;
+    border: 1px solid #cccccc;
+    min-width: 200px;
+    padding: 10px;
+  }
+
+}
+
+
