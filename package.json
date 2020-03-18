@@ -1,7 +1,8 @@
 {
-  "name": "coronavirus-heatmap",
+  "name": "covid-19",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https:///github.com/ysg00/covid-19",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -12,6 +13,7 @@
     "dayjs": "^1.8.23",
     "eslint-plugin-flowtype": "^4.6.0",
     "fibers": "^4.0.2",
+    "gh-pages": "^2.2.0",
     "lodash": "^4.17.15",
     "node-sass": "^4.13.1",
     "ol": "^6.2.1",

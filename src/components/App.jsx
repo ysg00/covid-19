@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Row, Col, Result, Button } from 'antd';
+import { Layout, Row, Col, Result, Button, } from 'antd';
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
@@ -34,7 +34,8 @@ const App = props => {
       <Footer>
         <Row>
           <Col offset={2}>
-            <span>Data Source: <a href='https://github.com/CSSEGISandData/COVID-19'>https://github.com/CSSEGISandData/COVID-19</a></span>
+            <span>Data Source</span><br />
+            <a href='https://github.com/CSSEGISandData/COVID-19'>https://github.com/CSSEGISandData/COVID-19</a>
           </Col>
         </Row>
       </Footer>
