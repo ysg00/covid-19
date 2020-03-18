@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Row, Col, Result, Button  } from 'antd';
+import { Layout, Row, Col, Result, Button } from 'antd';
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
@@ -16,7 +16,7 @@ const App = props => {
   const app = (
     <Layout id="app">
       <Header>
-        <h1 style={{color: 'white'}}>Covid-19 Dashboard</h1>
+        <h1 style={{ color: 'white' }}>Covid-19 Dashboard</h1>
       </Header>
       <Layout>
         <Content style={{
@@ -32,7 +32,11 @@ const App = props => {
         </Content>
       </Layout>
       <Footer>
-        Footer
+        <Row>
+          <Col offset={2}>
+            <span>Data Source: <a href='https://github.com/CSSEGISandData/COVID-19'>https://github.com/CSSEGISandData/COVID-19</a></span>
+          </Col>
+        </Row>
       </Footer>
     </Layout>
   );
@@ -52,7 +56,7 @@ const App = props => {
                 </Link>
               }
             />
-          )}/>
+          )} />
         </Switch>
       </Router>
     </Provider>
