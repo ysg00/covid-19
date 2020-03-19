@@ -155,8 +155,8 @@ const HeatMap = props => {
         })
       ],
       view: new View({
-        center: fromLonLat([-80, 35]),
-        zoom: 3,
+        center: fromLonLat([-100, 35]),
+        zoom: 2,
       }),
       overlays: [popup],
     });

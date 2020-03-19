@@ -1,5 +1,5 @@
 {
-  "name": "coronavirus-heatmap",
+  "name": "covid-19",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,6 +12,7 @@
     "dayjs": "^1.8.23",
     "eslint-plugin-flowtype": "^4.6.0",
     "fibers": "^4.0.2",
+    "gh-pages": "^2.2.0",
     "lodash": "^4.17.15",
     "node-sass": "^4.13.1",
     "ol": "^6.2.1",
@@ -32,7 +33,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "preserve": "npm run build",
+    "serve": "serve -s build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,5 +53,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": "https://ysg00.github.io/covid-19"
 }
