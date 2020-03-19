@@ -60,13 +60,13 @@ const MainData = props => {
       <Content className='main-data'>
         <Carousel effect='fade' autoplay dotPosition='bottom'>
           {Object.keys(data).map(k => (
-            <Card>
+            <Card key={`card-${k}`}>
               <Meta
                 title={<h1>{k}</h1>}
                 description={
                   <Row>
                     {Object.keys(data[k]).map(dk => (
-                      <Col span={8} className='text-center'>
+                      <Col span={8} className='text-center' key={`col-${dk}`}>
                         <Statistic
                           title={<h1>{dk}</h1>}
                           value={data[k][dk]}
