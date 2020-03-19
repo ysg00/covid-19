@@ -1,6 +1,6 @@
 {
-  "short_name": "Corona",
-  "name": "Coronavirus Heatmap",
+  "short_name": "covid-19",
+  "name": "covid-19",
   "icons": [
     {
       "src": "favicon.ico",
