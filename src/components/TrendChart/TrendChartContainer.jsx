@@ -5,7 +5,8 @@ import TrendChart from './TrendChart';
 
 
 const TrendChartContainer = props => {
-  const timeSeries = useSelector(state => state.timeSeriesData);
+  const features = useSelector(state => state.features);
+  const featureIdx = useSelector(state => state.featureIdx);
   const isLoading = useSelector(state => state.isLoading);
   const { Meta } = Card;
   return (

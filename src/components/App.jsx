@@ -3,7 +3,7 @@ import { Layout, Row, Col } from 'antd';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import reducer from './../reducer';
-import TrendChartContainer from './TrendChart/TrendChartContainer';
+// import TrendChartContainer from './TrendChart/TrendChartContainer';
 import MainData from './MainData/MainData';
 import HeatMap from './HeatMap/HeatMap';
 import MainContainer from './MainContainer';
@@ -26,9 +26,11 @@ const App = props => {
             }}>
               <Row justify='center'>
                 <Col id="main-content" span={20}>
-                  <MainData />
+                    <MainData />
+                    <HeatMap />
+                  {/* <MainData />
                   <HeatMap />
-                  <TrendChartContainer />
+                  <TrendChartContainer /> */}
                 </Col>
               </Row>
             </Content>

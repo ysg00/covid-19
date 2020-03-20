@@ -7,7 +7,7 @@ import { OSM, Vector as VectorSource } from 'ol/source';
 import { Circle, Fill, Style } from 'ol/style';
 import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
-import { batch, useSelector, useDispatch } from 'react-redux';
+import { batch, useSelector } from 'react-redux';
 import moment from 'moment';
 import MapPopup from './HeatMapPopup';
 import { Card } from 'antd';
@@ -18,8 +18,7 @@ const HeatMap = props => {
   const [sdata, setSdata] = useState({});
   const [renderData, setRenderData] = useState('');
   const isLoading = useSelector(state => state.isLoading);
-  const geoJson = useSelector(state => state.geoJson);
-  const dispatch = useDispatch();
+  const features = useSelector(state => state.features);
   const { Meta } = Card;
   useEffect(() => {
     if (!isLoading) {
@@ -136,9 +135,8 @@ const HeatMap = props => {
       const geoJsonType = new GeoJSON();
       const vectorSource = new VectorSource({
         format: geoJsonType,
-        features: geoJsonType.readFeatures(geoJson, { featureProjection: 'EPSG:3857' })
+        features: geoJsonType.readFeatures({ type: 'FeatureCollection', features }, { featureProjection: 'EPSG:3857' })
       });
-      // dispatch({ type: 'DESTROY_GEOJSON' });
       const map = new Map({
         target: 'map',
         layers: [
@@ -182,7 +180,7 @@ const HeatMap = props => {
         }
       });
     }
-  }, [isLoading]);
+  }, [isLoading, features]);
 
   return (
     <Card loading={isLoading}>

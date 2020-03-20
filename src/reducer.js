@@ -1,9 +1,10 @@
 const initialState = {
   darkMode: false,
   isLoading: true,
-  timeSeriesData: {},
-  lastUpdateData: {},
-  geoJson: {},
+  timeSeries: {},
+  latestUpdate: {},
+  featureIdx: {},
+  features: {},
 };
 
 export default (state = initialState, action) => {
@@ -21,17 +22,22 @@ export default (state = initialState, action) => {
     case 'UPDATE_TIMESERIES_DATA':
       return {
         ...state,
-        timeSeriesData: action.timeSeriesData,
+        timeSeries: action.timeSeries,
       };
-    case 'UPDATE_LASTUPDATE_DATA':
+    case 'UPDATE_LATESTUPDATE_DATA':
       return {
         ...state,
-        lastUpdateData: action.lastUpdateData,
+        latestUpdate: action.latestUpdate,
       };
-    case 'UPDATE_GEOJSON':
+    case 'UPDATE_FEATURES':
       return {
         ...state,
-        geoJson: action.geoJson,
+        features: action.features,
+      };
+    case 'UPDATE_FEATUREIDX':
+      return {
+        ...state,
+        featureIdx: action.featureIdx,
       };
     default:
       return state;
