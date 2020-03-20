@@ -25,10 +25,6 @@ const TrendChart = props => {
     const tickFormatter = x => (x%250 === 0 && x !== 0? `${(x/1000).toFixed(2)}k` : `${x}`);
     c3.generate({
       bindto: ref.current,
-      title: {
-        text: 'Global TimeSeries',
-        positiion: 'top-center',
-      },
       padding: {
         left: 50,
         top: 10,
@@ -98,7 +94,7 @@ const TrendChart = props => {
 
   return (
     <div className='trend-chart' ref={ref} />
-  )
-}
+  );
+};
 
 export default TrendChart;
