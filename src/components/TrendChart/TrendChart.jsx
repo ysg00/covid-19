@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import c3 from 'c3';
+import moment from 'moment';
 import './TrendChart.scss';
 
 const TrendChart = props => {
@@ -25,10 +26,6 @@ const TrendChart = props => {
     const tickFormatter = x => (x%250 === 0 && x !== 0? `${(x/1000).toFixed(2)}k` : `${x}`);
     c3.generate({
       bindto: ref.current,
-      title: {
-        text: 'Global TimeSeries',
-        positiion: 'top-center',
-      },
       padding: {
         left: 50,
         top: 10,
@@ -84,7 +81,7 @@ const TrendChart = props => {
       },
       tooltip: {
         format: {
-          title: (_, idx) => time[idx],
+          title: (_, idx) => moment(time[idx]).format('YYYY-MM-DD'),
         },
         position(data, width, height, element) {
           return {
@@ -98,7 +95,7 @@ const TrendChart = props => {
 
   return (
     <div className='trend-chart' ref={ref} />
-  )
-}
+  );
+};
 
 export default TrendChart;

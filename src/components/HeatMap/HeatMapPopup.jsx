@@ -12,7 +12,7 @@ const HeatMapPopup = props => {
 
   return (
     <Card
-      bodyStyle={{ padding: '0 15px' }}
+      bodyStyle={{ padding: '5px 10px' }}
     >
       <Meta
         title={sdata.province ? `${sdata.province}, ${sdata.country}` : sdata.country}

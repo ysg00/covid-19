@@ -1,67 +1,54 @@
 import React from 'react';
-import { Layout, Row, Col, Result, Button, } from 'antd';
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
+import { Layout, Row, Col } from 'antd';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 import reducer from './../reducer';
-import MainContainer from './MainContainer';
 import TrendChartContainer from './TrendChart/TrendChartContainer';
 import MainData from './MainData/MainData';
 import HeatMap from './HeatMap/HeatMap';
+import MainContainer from './MainContainer';
+import DataTable from './DataTable/DataTable';
+import GoogleTrend from './GoogleTrend/GoogleTrend';
 import './App.scss';
 
 const App = props => {
-  const { Header, Content, Sider, Footer } = Layout;
-  const store = createStore(reducer)
-  const app = (
-    <Layout id="app">
-      <Header>
-        <h1 style={{ color: 'white' }}>Covid-19 Dashboard</h1>
-      </Header>
-      <Layout>
-        <Content style={{
-          padding: '0 50px',
-        }}>
-          <Row justify='center'>
-            <Col id="main-content" span={20}>
-              <MainData />
-              <HeatMap />
-              <TrendChartContainer />
-            </Col>
-          </Row>
-        </Content>
-      </Layout>
-      <Footer>
-        <Row>
-          <Col offset={2}>
-            <span>Data Source</span><br />
-            <a href='https://github.com/CSSEGISandData/COVID-19'>https://github.com/CSSEGISandData/COVID-19</a>
-          </Col>
-        </Row>
-      </Footer>
-    </Layout>
-  );
+  const { Header, Content, Footer } = Layout;
+  const store = createStore(reducer);
+  
   return (
     <Provider store={store}>
-      <Router>
-        <Switch>
-          <Route exact path='/' component={() => app} />
-          <Route component={() => (
-            <Result
-              status="404"
-              title="404"
-              subTitle="Sorry, the page you visited does not exist."
-              extra={
-                <Link to='/'>
-                  <Button type="primary">Back Home</Button>
-                </Link>
-              }
-            />
-          )} />
-        </Switch>
-      </Router>
+      <MainContainer id='main-container'>
+        <Layout id="app">
+          <Header>
+            <h1 style={{ color: 'white' }}>Covid-19 Dashboard</h1>
+          </Header>
+          <Layout>
+            <Content style={{
+              padding: '0 50px',
+            }}>
+              <Row justify='center'>
+                <Col id="main-content" span={20}>
+                    <MainData />
+                    <HeatMap />
+                    <TrendChartContainer />
+                    <DataTable />
+                    <GoogleTrend />
+                </Col>
+              </Row>
+            </Content>
+          </Layout>
+          <Footer>
+            <Row>
+              <Col offset={2}>
+                <span>Data Source</span><br />
+                <a href='https://github.com/CSSEGISandData/COVID-19'>https://github.com/CSSEGISandData/COVID-19</a>
+              </Col>
+            </Row>
+          </Footer>
+        </Layout>
+      </MainContainer>
     </Provider>
   );
-}
+};
 
 export default App;
