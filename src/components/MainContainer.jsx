@@ -91,8 +91,8 @@ const MainContainer = ({children, ...rest}) => {
       });
     };
 
-    const handleResLastUpdate = res => {
-      res.json().then(json => {
+    const handleResLastUpdate = async res => {
+      await res.json().then(json => {
         if (!json.features) {
           throw new Error('error fetch data');
         }
@@ -202,13 +202,13 @@ const MainContainer = ({children, ...rest}) => {
 
     Promise.all(urls.map(u => fetch(u))).then(res => {
       handleResLastUpdate(res[0]);
-      res.slice(1).forEach((r, i) => {
-        r.text().then(t => {
+      res.slice(1).forEach(async (r, i) => {
+        await r.text().then(t => {
           Papa.parse(t, {
             complete: e => handleResTimeSeries({ csvData: e.data, idx: i }),
           });
         }).catch(e => console.log(e));
-      }).catch(e => console.log(e));
+      });
     }).catch(e => console.log(e));
   }, [dispatch]);
   return (

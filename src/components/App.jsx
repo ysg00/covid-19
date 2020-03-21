@@ -7,12 +7,12 @@ import TrendChartContainer from './TrendChart/TrendChartContainer';
 import MainData from './MainData/MainData';
 import HeatMap from './HeatMap/HeatMap';
 import MainContainer from './MainContainer';
-// import './App.scss';
+import './App.scss';
 
 const App = props => {
   const { Header, Content, Footer } = Layout;
   const store = createStore(reducer)
-
+  console.log(document.getElementById("theme-style"));
   return (
     <Provider store={store}>
       <MainContainer id='main-container'>
