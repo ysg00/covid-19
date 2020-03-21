@@ -184,17 +184,20 @@ const HeatMap = props => {
 
   return (
     <Card loading={isLoading}>
-      <Meta description={
-        <>
-          <div id='map' className='heat-map' />
-          {curCoor
-            ? <div id='map-popup' className='ol-popup'>
-              <MapPopup sdata={sdata} coor={curCoor} renderData={renderData} />
-            </div>
-            : <div id='map-popup' />
-          }
-        </>
-      }/>
+      {isLoading
+        ? null
+        : <Meta description={
+          <>
+            <div id='map' className='heat-map' />
+            {curCoor
+              ? <div id='map-popup' className='ol-popup'>
+                <MapPopup sdata={sdata} coor={curCoor} renderData={renderData} />
+              </div>
+              : <div id='map-popup' />
+            }
+          </>
+        }/>
+      }
     </Card>
   );
 };

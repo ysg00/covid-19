@@ -9,7 +9,6 @@ const MainData = props => {
   const { Meta } = Card;
   const data = useSelector(state => state.latestUpdate);
   const isLoading = useSelector(state => state.isLoading);
-  console.log('maindata', data);
   return (
     <Skeleton loading={isLoading} active>
       <Content className='main-data'>
@@ -32,7 +31,7 @@ const MainData = props => {
                             <Statistic
                               value={data[k].increment[dk]}
                               valueStyle={{ color: dk === 'recovered' ? '#3f8600' : '#cf1322' }}
-                              suffix={<ArrowUpOutlined />}
+                              prefix={<ArrowUpOutlined style={{bottom: '5px'}}/>}
                             />
                           </Col>
                         );

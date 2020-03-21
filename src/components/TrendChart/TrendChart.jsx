@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import c3 from 'c3';
+import moment from 'moment';
 import './TrendChart.scss';
 
 const TrendChart = props => {
@@ -80,7 +81,7 @@ const TrendChart = props => {
       },
       tooltip: {
         format: {
-          title: (_, idx) => time[idx],
+          title: (_, idx) => moment(time[idx]).format('YYYY-MM-DD'),
         },
         position(data, width, height, element) {
           return {

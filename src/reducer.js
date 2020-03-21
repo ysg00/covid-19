@@ -19,12 +19,12 @@ export default (state = initialState, action) => {
         ...state,
         darkMode: !state.darkMode,
       };
-    case 'UPDATE_TIMESERIES_DATA':
+    case 'UPDATE_TIMESERIES':
       return {
         ...state,
         timeSeries: action.timeSeries,
       };
-    case 'UPDATE_LATESTUPDATE_DATA':
+    case 'UPDATE_LATESTUPDATE':
       return {
         ...state,
         latestUpdate: action.latestUpdate,

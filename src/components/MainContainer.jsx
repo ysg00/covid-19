@@ -11,6 +11,8 @@ const MainContainer = ({children, ...rest}) => {
     const features = [];
     const featureIdx = {};
     const countryIdx = {};
+    const timeSeries = {};
+    const timeSeriesGlobal = {};
     const latestUpdate = {};
     const lastUpdate = {};
     const yesterdayData = {};
@@ -22,40 +24,70 @@ const MainContainer = ({children, ...rest}) => {
       'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv',
       `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/${yesterday}.csv`,
     ];
-
     const generateData = (csv, dataKey) => {
       // jhu csv header format: [province, country, lat, long, date...]
       const header = csv[0];
       csv.slice(1).forEach((arr, i) => {
-      if (features[i]) {
-        features[i].properties[dataKey] = arr.slice(4).map((count, timeIdx) => ({
-          time: new Date(header[timeIdx + 4]),
-          count: parseInt(count),
-        }));
-      } else {
-        if (countryIdx[arr[1]]) {
-          countryIdx[arr[1]].push(i);
+        if (features[i]) {
+          features[i].properties[dataKey] = arr.slice(4).map((count, timeIdx) => ({
+            time: new Date(header[timeIdx + 4]),
+            count: parseInt(count),
+          }));
         } else {
-          countryIdx[arr[1]] = [i];
-        }
-        featureIdx[`${arr[1]}-${arr[0]}`] = i;
-        features.push({
-          id: i,
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [parseFloat(arr[3]), parseFloat(arr[2])],
-          },
-          properties: {
-            country: arr[1],
-            province: arr[0],
-            [dataKey]: arr.slice(4).map((count, timeIdx) => ({
-              time: new Date(header[timeIdx + 4]),
-              count: parseInt(count),
-            })),
+          if (countryIdx[arr[1]]) {
+            countryIdx[arr[1]].push(i);
+          } else {
+            countryIdx[arr[1]] = [i];
           }
-        });
-      }
+          featureIdx[`${arr[1]}-${arr[0]}`] = i;
+          features.push({
+            id: i,
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [parseFloat(arr[3]), parseFloat(arr[2])],
+            },
+            properties: {
+              country: arr[1],
+              province: arr[0],
+              [dataKey]: arr.slice(4).map((count, timeIdx) => ({
+                time: new Date(header[timeIdx + 4]),
+                count: parseInt(count),
+              })),
+            }
+          });
+        }
+        if (lastUpdate[arr[1]]) {
+          if (timeSeries[arr[1]]) {
+            if (timeSeries[arr[1]][dataKey]) {
+              timeSeries[arr[1]][dataKey].forEach((dk, ii) => {
+                timeSeries[arr[1]][dataKey][ii] = dk + parseInt(arr[ii+4])
+              });
+            } else {
+              timeSeries[arr[1]][dataKey] = [...arr.slice(4)].map(d => parseInt(d));
+            }
+          }
+          else {
+            timeSeries[arr[1]] = {
+              time: [...header.slice(4)].map(d => new Date(d)),
+              [dataKey]: [...arr.slice(4)].map(d => parseInt(d)),
+            };
+          }
+          if (Object.keys(timeSeriesGlobal).length) {
+            timeSeriesGlobal[dataKey].forEach((dk, ii) => {
+              timeSeriesGlobal[dataKey][ii] = dk + parseInt(arr[ii+4])
+            });
+          } else {
+            const dLen = arr.length-4;
+            Object.assign(timeSeriesGlobal, {
+              time: [...header.slice(4)].map(d => new Date(d)),
+              confirmed: Array(dLen).fill(0),
+              recovered: Array(dLen).fill(0),
+              deaths: Array(dLen).fill(0),
+              [dataKey]: [...arr.slice(4)].map(d => parseInt(d)),
+            });
+          }
+        }
       });
     };
 
@@ -85,9 +117,7 @@ const MainContainer = ({children, ...rest}) => {
           ...globData,
           lastUpdate: lastUpdate['US'].lastUpdate,
         };
-      }).catch(e => {
-        console.log(e);
-      });
+      }).catch(e => console.log(e));
     };
     const handleResTimeSeries = res => {
       const { csvData, idx } = res;
@@ -142,13 +172,27 @@ const MainContainer = ({children, ...rest}) => {
             deaths: lastUpdate.Global.deaths - globalInc.deaths,
           },
         };
+        Object.assign(timeSeries, {
+          ...timeSeries,
+          Global: timeSeriesGlobal,
+        });
+        Object.keys(timeSeries).forEach(k => {
+          if (latestUpdate[k]) {
+            const dLen = timeSeries[k].confirmed.length;
+            timeSeries[k].confirmed[dLen-1] = latestUpdate[k].confirmed;
+            timeSeries[k].recovered[dLen-1] = latestUpdate[k].recovered;
+            timeSeries[k].deaths[dLen-1] = latestUpdate[k].deaths;
+          } else {
+            delete timeSeries[k];
+          }
+
+        });
         batch(() => {
-          // dispatch({ type: 'UPDATE_TIMESERIES_DATA', timeSeriesData: {
-          //   glob: globTimeSeries,
-          //   us: usTimeSeries,
-          //   c: cTimeSeries
-          // }});
-          dispatch({ type: 'UPDATE_LATESTUPDATE_DATA', latestUpdate });
+          dispatch({ type: 'UPDATE_TIMESERIES', timeSeries: {
+            ...timeSeries,
+            Global: timeSeriesGlobal,
+          }});
+          dispatch({ type: 'UPDATE_LATESTUPDATE', latestUpdate });
           dispatch({ type: 'UPDATE_FEATURES', features });
           dispatch({ type: 'UPDATE_FEATUREIDX', featureIdx });
         });
@@ -164,10 +208,9 @@ const MainContainer = ({children, ...rest}) => {
             complete: e => handleResTimeSeries({ csvData: e.data, idx: i }),
           });
         }).catch(e => console.log(e));
-      });
-    });
+      }).catch(e => console.log(e));
+    }).catch(e => console.log(e));
   }, [dispatch]);
-
   return (
     <div {...rest}>
       {children}
