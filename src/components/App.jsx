@@ -7,6 +7,8 @@ import TrendChartContainer from './TrendChart/TrendChartContainer';
 import MainData from './MainData/MainData';
 import HeatMap from './HeatMap/HeatMap';
 import MainContainer from './MainContainer';
+import DataTable from './DataTable/DataTable';
+import GoogleTrend from './GoogleTrend/GoogleTrend';
 import './App.scss';
 
 const App = props => {
@@ -29,9 +31,8 @@ const App = props => {
                     <MainData />
                     <HeatMap />
                     <TrendChartContainer />
-                  {/* <MainData />
-                  <HeatMap />
-                  <TrendChartContainer /> */}
+                    <DataTable />
+                    <GoogleTrend />
                 </Col>
               </Row>
             </Content>
