@@ -33,32 +33,34 @@ const GoogleTrend = props => {
 
   useEffect(() => {
     if (!isLoading) {
-      const currentGtTimeSeries = document.getElementById('gt-time-series').children[0];
-      currentGtTimeSeries.parentNode.removeChild(currentGtTimeSeries);
-      const currentGtGeoMap = document.getElementById('gt-geo-map').children[0];
-      currentGtGeoMap.parentNode.removeChild(currentGtGeoMap);
-      handleScriptLoad({
-        type: 'TIMESERIES',
-        keyword: 'Corona Virus',
-        target: 'gt-time-series',
-        time: searchTime,
-        geo: searchArea,
-      });
-      handleScriptLoad({
-        type: 'GEO_MAP',
-        target: 'gt-geo-map',
-        time: searchTime,
-        geo: searchArea,
-      });
+      const gtTimeSeriesParent = document.getElementById('gt-time-series');
+      const gtGeoMapParent = document.getElementById('gt-geo-map');
+      if (gtTimeSeriesParent.children.length > 0 && gtGeoMapParent.children.length > 0) {
+        gtTimeSeriesParent.removeChild(gtTimeSeriesParent.children[0]);
+        gtGeoMapParent.removeChild(gtGeoMapParent.children[0]);
+        handleScriptLoad({
+          type: 'TIMESERIES',
+          keyword: 'Corona Virus',
+          target: 'gt-time-series',
+          time: searchTime,
+          geo: searchArea,
+        });
+        handleScriptLoad({
+          type: 'GEO_MAP',
+          target: 'gt-geo-map',
+          time: searchTime,
+          geo: searchArea,
+        });
+      }
     }
-  }, [searchTime, searchArea]);
+  }, [isLoading, searchTime, searchArea]);
 
   return (
-    <Card className='gt-card' loading={isLoading}>
+    <Card loading={isLoading} bodyStyle={{ height: '1080px'}}>
       <Meta
         title={
           <Row>
-            <Col span={3}>
+            <Col span={12}>
               <Select
                 showSearch
                 defaultValue='worldwide'
@@ -74,7 +76,7 @@ const GoogleTrend = props => {
                 )}
               </Select>
             </Col>
-            <Col span={3}>
+            <Col span={12}>
               <Select
                 defaultValue='now 7-d'
                 bordered={false}
@@ -96,7 +98,7 @@ const GoogleTrend = props => {
         }
         description={
           <Row>
-            <Col id='gt-time-series' span={12}>
+            <Col id='gt-time-series' span={24}>
               <Script
                 url='https://ssl.gstatic.com/trends_nrtr/2051_RC11/embed_loader.js'
                 onLoad={() => handleScriptLoad({
@@ -107,7 +109,7 @@ const GoogleTrend = props => {
                 })}
               />
             </Col>
-            <Col id='gt-geo-map' span={12}>
+            <Col id='gt-geo-map' span={24}>
               <Script
                 url='https://ssl.gstatic.com/trends_nrtr/2051_RC11/embed_loader.js'
                 onLoad={() => handleScriptLoad({

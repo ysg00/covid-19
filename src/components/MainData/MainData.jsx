@@ -10,8 +10,7 @@ const MainData = props => {
   const data = useSelector(state => state.latestUpdate);
   const isLoading = useSelector(state => state.isLoading);
   return (
-    <Skeleton loading={isLoading} active>
-      <Content className='main-data'>
+    <>
         {isLoading
           ? null
           : <Carousel effect='fade' autoplay dotPosition='bottom'>
@@ -31,7 +30,7 @@ const MainData = props => {
                             <Statistic
                               value={data[k].increment[dk]}
                               valueStyle={{ color: dk === 'recovered' ? '#3f8600' : '#cf1322' }}
-                              prefix={<ArrowUpOutlined style={{bottom: '5px'}}/>}
+                              prefix={<ArrowUpOutlined />}
                             />
                           </Col>
                         );
@@ -43,8 +42,7 @@ const MainData = props => {
             ))}
           </Carousel>
         }
-      </Content>
-    </Skeleton>
+      </>
   );
 };
 

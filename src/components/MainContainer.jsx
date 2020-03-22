@@ -27,65 +27,68 @@ const MainContainer = ({children, ...rest}) => {
     const generateData = (csv, dataKey) => {
       // jhu csv header format: [province, country, lat, long, date...]
       const header = csv[0];
+      // if (arr[1] && !(arr[1]==='US' && arr[0] && /.*, [A-Z][A-Z]\ ?$/.test(arr[0]))){
       csv.slice(1).forEach((arr, i) => {
-        if (features[i]) {
-          features[i].properties[dataKey] = arr.slice(4).map((count, timeIdx) => ({
-            time: new Date(header[timeIdx + 4]),
-            count: parseInt(count),
-          }));
-        } else {
-          if (countryIdx[arr[1]]) {
-            countryIdx[arr[1]].push(i);
+        if (arr[1]) {
+          if (features[i]) {
+            features[i].properties[dataKey] = arr.slice(4).map((count, ii) => ({
+              time: new Date(header[ii + 4]),
+              count: count === '' ? parseInt(arr[ii + 3]) : parseInt(count),
+            }));
           } else {
-            countryIdx[arr[1]] = [i];
-          }
-          featureIdx[`${arr[1]}-${arr[0]}`] = i;
-          features.push({
-            id: i,
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [parseFloat(arr[3]), parseFloat(arr[2])],
-            },
-            properties: {
-              country: arr[1],
-              province: arr[0],
-              [dataKey]: arr.slice(4).map((count, timeIdx) => ({
-                time: new Date(header[timeIdx + 4]),
-                count: parseInt(count),
-              })),
+            if (countryIdx[arr[1]]) {
+              countryIdx[arr[1]].push(i);
+            } else {
+              countryIdx[arr[1]] = [i];
             }
-          });
-        }
-        if (lastUpdate[arr[1]]) {
-          if (timeSeries[arr[1]]) {
-            if (timeSeries[arr[1]][dataKey]) {
-              timeSeries[arr[1]][dataKey].forEach((dk, ii) => {
-                timeSeries[arr[1]][dataKey][ii] = dk + parseInt(arr[ii+4])
+            featureIdx[`${arr[1]}-${arr[0]}`] = i;
+            features.push({
+              id: i,
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [parseFloat(arr[3]), parseFloat(arr[2])],
+              },
+              properties: {
+                country: arr[1],
+                province: arr[0],
+                [dataKey]: arr.slice(4).map((count, ii) => ({
+                  time: new Date(header[ii + 4]),
+                  count: count === '' ? parseInt(arr[ii + 3]) : parseInt(count),
+                })),
+              }
+            });
+          }
+          if (lastUpdate[arr[1]]) {
+            if (timeSeries[arr[1]]) {
+              if (timeSeries[arr[1]][dataKey]) {
+                timeSeries[arr[1]][dataKey].forEach((dk, ii) => {
+                  timeSeries[arr[1]][dataKey][ii] = dk + parseInt(arr[ii+4])
+                });
+              } else {
+                timeSeries[arr[1]][dataKey] = [...arr.slice(4)].map(d => parseInt(d));
+              }
+            }
+            else {
+              timeSeries[arr[1]] = {
+                time: [...header.slice(4)].map(d => new Date(d)),
+                [dataKey]: [...arr.slice(4)].map(d => parseInt(d)),
+              };
+            }
+            if (Object.keys(timeSeriesGlobal).length) {
+              timeSeriesGlobal[dataKey].forEach((dk, ii) => {
+                timeSeriesGlobal[dataKey][ii] = dk + parseInt(arr[ii+4])
               });
             } else {
-              timeSeries[arr[1]][dataKey] = [...arr.slice(4)].map(d => parseInt(d));
+              const dLen = arr.length-4;
+              Object.assign(timeSeriesGlobal, {
+                time: [...header.slice(4)].map(d => new Date(d)),
+                confirmed: Array(dLen).fill(0),
+                recovered: Array(dLen).fill(0),
+                deaths: Array(dLen).fill(0),
+                [dataKey]: [...arr.slice(4)].map(d => parseInt(d)),
+              });
             }
-          }
-          else {
-            timeSeries[arr[1]] = {
-              time: [...header.slice(4)].map(d => new Date(d)),
-              [dataKey]: [...arr.slice(4)].map(d => parseInt(d)),
-            };
-          }
-          if (Object.keys(timeSeriesGlobal).length) {
-            timeSeriesGlobal[dataKey].forEach((dk, ii) => {
-              timeSeriesGlobal[dataKey][ii] = dk + parseInt(arr[ii+4])
-            });
-          } else {
-            const dLen = arr.length-4;
-            Object.assign(timeSeriesGlobal, {
-              time: [...header.slice(4)].map(d => new Date(d)),
-              confirmed: Array(dLen).fill(0),
-              recovered: Array(dLen).fill(0),
-              deaths: Array(dLen).fill(0),
-              [dataKey]: [...arr.slice(4)].map(d => parseInt(d)),
-            });
           }
         }
       });

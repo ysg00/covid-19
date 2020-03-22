@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from 'antd';
 import Plot from 'react-plotly.js';
 
-const HeatMapPopup = props => {
+const OpenLayerMapPopup = props => {
   const { sdata, renderData: {
     lastConfirmed,
     lastRecovered,
@@ -77,4 +77,4 @@ const HeatMapPopup = props => {
   );
 }
 
-export default HeatMapPopup;
+export default OpenLayerMapPopup;

@@ -9,11 +9,12 @@ import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
 import { batch, useSelector } from 'react-redux';
 import moment from 'moment';
-import MapPopup from './HeatMapPopup';
-import { Card } from 'antd';
-import './HeatMap.scss';
+import MapPopup from './OpenLayerMapPopup';
+import SideBar from './OpenLayerMapSideBar';
+import { Card, Row, Col } from 'antd';
+import './OpenLayerMap.scss';
 
-const HeatMap = props => {
+const OpenLayerMap = props => {
   const [curCoor, setCurCoor] = useState(undefined);
   const [sdata, setSdata] = useState({});
   const [renderData, setRenderData] = useState('');
@@ -187,19 +188,24 @@ const HeatMap = props => {
       {isLoading
         ? null
         : <Meta description={
-          <>
-            <div id='map' className='heat-map' />
-            {curCoor
-              ? <div id='map-popup' className='ol-popup'>
-                <MapPopup sdata={sdata} coor={curCoor} renderData={renderData} />
-              </div>
-              : <div id='map-popup' />
-            }
-          </>
+          <Row>
+            <Col span={20}>
+              <div id='map' className='open-layer-map' />
+              {curCoor
+                ? <div id='map-popup' className='ol-popup'>
+                  <MapPopup sdata={sdata} coor={curCoor} renderData={renderData} />
+                </div>
+                : <div id='map-popup' />
+              }
+            </Col>
+            <Col span={4}>
+              <SideBar />
+            </Col>
+          </Row>
         }/>
       }
     </Card>
   );
 };
 
-export default HeatMap;
+export default OpenLayerMap;
