@@ -7,10 +7,8 @@ const MainContainer = ({children, ...rest}) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // yesterday.setDate(yesterday.getDate() - 1);
     const features = [];
     const featureIdx = {};
-    const countryIdx = {};
     const timeSeries = {};
     const timeSeriesWorldwide = {};
     const latestUpdate = {};
@@ -27,7 +25,6 @@ const MainContainer = ({children, ...rest}) => {
     const generateData = (csv, dataKey) => {
       // jhu csv header format: [province, country, lat, long, date...]
       const header = csv[0];
-      // if (arr[1] && !(arr[1]==='US' && arr[0] && /.*, [A-Z][A-Z]\ ?$/.test(arr[0]))){
       csv.slice(1).forEach((arr, i) => {
         if (arr[1]) {
           if (features[i]) {
@@ -36,11 +33,6 @@ const MainContainer = ({children, ...rest}) => {
               count: count === '' ? parseInt(arr[ii + 3]) : parseInt(count),
             }));
           } else {
-            if (countryIdx[arr[1]]) {
-              countryIdx[arr[1]].push(i);
-            } else {
-              countryIdx[arr[1]] = [i];
-            }
             featureIdx[`${arr[1]}-${arr[0]}`] = i;
             features.push({
               id: i,
@@ -94,34 +86,6 @@ const MainContainer = ({children, ...rest}) => {
       });
     };
 
-    const handleResLastUpdate = async res => {
-      await res.json().then(json => {
-        if (!json.features) {
-          throw new Error('error fetch data');
-        }
-        const globData = {
-          confirmed: 0,
-          recovered: 0,
-          deaths: 0,
-          lastUpdate: new Date(),
-        };
-        json.features.forEach(f => {
-          lastUpdate[f.attributes.Country_Region] = {
-            confirmed: f.attributes.Confirmed,
-            recovered: f.attributes.Recovered,
-            deaths: f.attributes.Deaths,
-            lastUpdate: f.attributes.Last_Update,
-          };
-          globData.confirmed += f.attributes.Confirmed;
-          globData.recovered += f.attributes.Recovered;
-          globData.deaths += f.attributes.Deaths;
-        });
-        lastUpdate['Worldwide'] = {
-          ...globData,
-          lastUpdate: lastUpdate['US'].lastUpdate,
-        };
-      }).catch(e => console.log(e));
-    };
     const handleResTimeSeries = res => {
       const { csvData, idx } = res;
       if (idx === 0) {
@@ -203,15 +167,53 @@ const MainContainer = ({children, ...rest}) => {
       }
     };
 
-    Promise.all(urls.map(u => fetch(u))).then(res => {
-      handleResLastUpdate(res[0]);
-      res.slice(1).forEach(async (r, i) => {
-        await r.text().then(t => {
+    Promise.all(urls.map(u => fetch(u))).then(async res => {
+      res[0].json().then(json => {
+        if (!json.features) {
+          throw new Error('error fetch data');
+        }
+        const globData = {
+          confirmed: 0,
+          recovered: 0,
+          deaths: 0,
+          lastUpdate: new Date(),
+        };
+        json.features.forEach(f => {
+          lastUpdate[f.attributes.Country_Region] = {
+            confirmed: f.attributes.Confirmed,
+            recovered: f.attributes.Recovered,
+            deaths: f.attributes.Deaths,
+            lastUpdate: f.attributes.Last_Update,
+          };
+          globData.confirmed += f.attributes.Confirmed;
+          globData.recovered += f.attributes.Recovered;
+          globData.deaths += f.attributes.Deaths;
+        });
+        lastUpdate['Worldwide'] = {
+          ...globData,
+          lastUpdate: lastUpdate['US'].lastUpdate,
+        };
+        res[1].text().then(t => {
           Papa.parse(t, {
-            complete: e => handleResTimeSeries({ csvData: e.data, idx: i }),
+            complete: e => handleResTimeSeries({ csvData: e.data, idx: 0 }),
           });
+          res[2].text().then(t => {
+            Papa.parse(t, {
+              complete: e => handleResTimeSeries({ csvData: e.data, idx: 1 }),
+            });
+            res[3].text().then(t => {
+              Papa.parse(t, {
+                complete: e => handleResTimeSeries({ csvData: e.data, idx: 2 }),
+              });
+              res[4].text().then(t => {
+                Papa.parse(t, {
+                  complete: e => handleResTimeSeries({ csvData: e.data, idx: 3 }),
+                });
+              }).catch(e => console.log(e));
+            }).catch(e => console.log(e));
+          }).catch(e => console.log(e));
         }).catch(e => console.log(e));
-      });
+      }).catch(e => console.log(e));
     }).catch(e => console.log(e));
   }, [dispatch]);
   return (

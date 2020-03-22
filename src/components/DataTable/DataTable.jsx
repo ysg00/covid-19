@@ -24,7 +24,7 @@ const DataTable = props => {
       sorter: (a, b) => a.area.localeCompare(b.area),
       sortDirections: ['ascend', 'descend'],
       ellipsis: true,
-      className: 'table-column',
+      className: 'text-nowrap',
     },
     {
       title: 'Confirmed',
@@ -32,7 +32,7 @@ const DataTable = props => {
       key: 'confirmed',
       sorter: (a, b) => a.confirmed - b.confirmed,
       sortDirections: ['descend', 'ascend'],
-      className: 'table-column',
+      className: 'text-nowrap',
     },
     {
       title: 'Increment',
@@ -40,7 +40,7 @@ const DataTable = props => {
       key: 'increment',
       sorter: (a, b) => a.increment - b.increment,
       sortDirections: ['descend', 'ascend'],
-      className: 'table-column',
+      className: 'text-nowrap',
     },
     {
       title: 'Recovered',
@@ -48,7 +48,7 @@ const DataTable = props => {
       key: 'recovered',
       sorter: (a, b) => a.recovered - b.recovered,
       sortDirections: ['descend', 'ascend'],
-      className: 'table-column',
+      className: 'text-nowrap',
     },
     {
       title: 'Deaths',
@@ -56,20 +56,19 @@ const DataTable = props => {
       key: 'deaths',
       sorter: (a, b) => a.deaths - b.deaths,
       sortDirections: ['descend', 'ascend'],
-      className: 'table-column',
+      className: 'text-nowrap',
     },
     {
       title: 'LastUpdate',
       dataIndex: 'lastUpdate',
       key: 'lastUpdate',
-      className: 'table-column',
+      className: 'text-nowrap',
     },
     {
       title: 'Series',
       dataIndex: 'timeseries',
       key: 'timeseries',
-      className: 'table-column',
-      width: 100,
+      className: 'text-nowrap',
     },
   ];
 
