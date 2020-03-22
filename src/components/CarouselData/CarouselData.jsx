@@ -1,11 +1,11 @@
 import React from 'react';
-import { Layout, Row, Col, Statistic, Card, Skeleton, Carousel } from 'antd';
+import { Row, Col, Statistic, Card, Carousel } from 'antd';
 import { ArrowUpOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
-import './MainData.scss';
+import lodash from 'lodash';
+import './CarouselData.scss';
 
-const MainData = props => {
-  const { Content } = Layout;
+const CarouselData = props => {
   const { Meta } = Card;
   const data = useSelector(state => state.latestUpdate);
   const isLoading = useSelector(state => state.isLoading);
@@ -14,7 +14,7 @@ const MainData = props => {
         {isLoading
           ? null
           : <Carousel effect='fade' autoplay dotPosition='bottom'>
-            {['Global', 'US', 'China'].map(k => (
+            {['Worldwide', 'US', 'China'].map(k => (
               <Card key={`data-card-${k}`}>
                 <Meta
                   title={<h1>{k}</h1>}
@@ -24,10 +24,11 @@ const MainData = props => {
                         return (
                           <Col span={8} className='text-center' key={`data-card-${k}-col-${dk}`}>
                             <Statistic
-                              title={<h1>{dk}</h1>}
+                              title={<h1>{lodash.capitalize(dk)}</h1>}
                               value={data[k][dk]}
                             />
                             <Statistic
+                              className={'delta-data'}
                               value={data[k].increment[dk]}
                               valueStyle={{ color: dk === 'recovered' ? '#3f8600' : '#cf1322' }}
                               prefix={<ArrowUpOutlined />}
@@ -46,4 +47,4 @@ const MainData = props => {
   );
 };
 
-export default MainData;
+export default CarouselData;

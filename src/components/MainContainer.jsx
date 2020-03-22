@@ -12,7 +12,7 @@ const MainContainer = ({children, ...rest}) => {
     const featureIdx = {};
     const countryIdx = {};
     const timeSeries = {};
-    const timeSeriesGlobal = {};
+    const timeSeriesWorldwide = {};
     const latestUpdate = {};
     const lastUpdate = {};
     const yesterdayData = {};
@@ -75,13 +75,13 @@ const MainContainer = ({children, ...rest}) => {
                 [dataKey]: [...arr.slice(4)].map(d => parseInt(d)),
               };
             }
-            if (Object.keys(timeSeriesGlobal).length) {
-              timeSeriesGlobal[dataKey].forEach((dk, ii) => {
-                timeSeriesGlobal[dataKey][ii] = dk + parseInt(arr[ii+4])
+            if (Object.keys(timeSeriesWorldwide).length) {
+              timeSeriesWorldwide[dataKey].forEach((dk, ii) => {
+                timeSeriesWorldwide[dataKey][ii] = dk + parseInt(arr[ii+4])
               });
             } else {
               const dLen = arr.length-4;
-              Object.assign(timeSeriesGlobal, {
+              Object.assign(timeSeriesWorldwide, {
                 time: [...header.slice(4)].map(d => new Date(d)),
                 confirmed: Array(dLen).fill(0),
                 recovered: Array(dLen).fill(0),
@@ -116,7 +116,7 @@ const MainContainer = ({children, ...rest}) => {
           globData.recovered += f.attributes.Recovered;
           globData.deaths += f.attributes.Deaths;
         });
-        lastUpdate['Global'] = {
+        lastUpdate['Worldwide'] = {
           ...globData,
           lastUpdate: lastUpdate['US'].lastUpdate,
         };
@@ -131,7 +131,7 @@ const MainContainer = ({children, ...rest}) => {
       } else if (idx === 2) {
         generateData(csvData, 'deaths')
       } else {
-        const globalInc = {
+        const worldwideInc = {
           confirmed: 0,
           recovered: 0,
           deaths: 0,
@@ -149,9 +149,9 @@ const MainContainer = ({children, ...rest}) => {
                 deaths: parseInt(arr[4]),
               };
             }
-            globalInc.confirmed += parseInt(arr[3]);
-            globalInc.recovered += parseInt(arr[5]);
-            globalInc.deaths += parseInt(arr[4]);
+            worldwideInc.confirmed += parseInt(arr[3]);
+            worldwideInc.recovered += parseInt(arr[5]);
+            worldwideInc.deaths += parseInt(arr[4]);
           }
         });
         Object.entries(lastUpdate).forEach(([k, v]) => {
@@ -167,17 +167,17 @@ const MainContainer = ({children, ...rest}) => {
             };    
           }
         });
-        latestUpdate['Global'] = {
-          ...lastUpdate['Global'],
+        latestUpdate['Worldwide'] = {
+          ...lastUpdate['Worldwide'],
           increment: {
-            confirmed: lastUpdate.Global.confirmed - globalInc.confirmed,
-            recovered: lastUpdate.Global.recovered - globalInc.recovered,
-            deaths: lastUpdate.Global.deaths - globalInc.deaths,
+            confirmed: lastUpdate.Worldwide.confirmed - worldwideInc.confirmed,
+            recovered: lastUpdate.Worldwide.recovered - worldwideInc.recovered,
+            deaths: lastUpdate.Worldwide.deaths - worldwideInc.deaths,
           },
         };
         Object.assign(timeSeries, {
           ...timeSeries,
-          Global: timeSeriesGlobal,
+          Worldwide: timeSeriesWorldwide,
         });
         Object.keys(timeSeries).forEach(k => {
           if (latestUpdate[k]) {
@@ -193,7 +193,7 @@ const MainContainer = ({children, ...rest}) => {
         batch(() => {
           dispatch({ type: 'UPDATE_TIMESERIES', timeSeries: {
             ...timeSeries,
-            Global: timeSeriesGlobal,
+            Worldwide: timeSeriesWorldwide,
           }});
           dispatch({ type: 'UPDATE_LATESTUPDATE', latestUpdate });
           dispatch({ type: 'UPDATE_FEATURES', features });

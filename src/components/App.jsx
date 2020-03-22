@@ -3,8 +3,7 @@ import { Layout, Row, Col, BackTop } from 'antd';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import reducer from './../reducer';
-// import TrendChartContainer from './TrendChart/TrendChartContainer';
-import MainData from './MainData/MainData';
+import CarouselData from './CarouselData/CarouselData';
 import OpenLayerMap from './OpenLayerMap/OpenLayerMap';
 import MainContainer from './MainContainer';
 import DataTable from './DataTable/DataTable';
@@ -29,7 +28,7 @@ const App = props => {
               <Row justify='center'>
                 <Col id="main-content" span={20}>
                   <BackTop />
-                  <MainData />
+                  <CarouselData />
                   <OpenLayerMap />
                   <Row>
                     <Col span={18}>

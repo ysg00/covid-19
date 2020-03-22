@@ -1,0 +1,23 @@
+.main-data {
+  .ant-card-body {
+    .ant-statistic {
+      color: white;
+    }
+  }
+  .ant-carousel .slick-dots-bottom {
+    bottom: 0;
+  }
+}
+
+.delta-data {
+  .ant-statistic-content {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    &-prefix {
+      display: flex !important;
+      justify-content: center;
+    }
+  }
+}

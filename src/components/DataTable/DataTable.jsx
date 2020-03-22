@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Popover, Button, Input, Row, Col } from 'antd';
+import { Table, Card, Popover, Button, Select, Row, Col } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import Highlighter from 'react-highlight-words';
 import { useSelector, batch } from 'react-redux';
 import moment from 'moment';
 import DataTableChart from './DataTableChart';
@@ -12,45 +11,10 @@ const DataTable = props => {
   const latestUpdate = useSelector(state => state.latestUpdate);
   const isLoading = useSelector(state => state.isLoading);
   const timeSeries = useSelector(state => state.timeSeries);
-  const [dataTableInput, setDataTableInput] = useState('');
+  const [tableData, setTableData] = useState([]);
+  const [renderData, setRenderData] = useState([]);
   const { Meta } = Card;
-
-  const sortData = arr => arr.sort((a, b) => {
-    const vA = a.confirmed;
-    const vB = b.confirmed;
-    if (vA < vB) {
-        return 1;
-    } else if (vA > vB) {
-        return -1;
-    } else {
-        return 0;
-    }
-  });
-
-  const dataSource = Object.entries(latestUpdate).map(([k, v], i) => ({
-    key: `${i}`,
-    area: k,
-    confirmed: v.confirmed,
-    increment: v.increment.confirmed,
-    recovered: v.recovered,
-    deaths: v.deaths,
-    lastUpdate: moment(v.lastUpdate).format('YYYY-MM-DD'),
-    timeseries: (
-      <>
-        {timeSeries[k]
-          ? <Popover
-            placement='topRight'
-            content={<DataTableChart {...timeSeries[k]} />} 
-            trigger='click'
-          >
-            <Button shape='circle' icon={<SearchOutlined />} />
-          </Popover>
-          : 'No Time Series Data Avaiable'
-        }
-      </>
-
-    ),
-  }));
+  const { Option } = Select;
 
   const columns = [
     {
@@ -61,19 +25,6 @@ const DataTable = props => {
       sortDirections: ['ascend', 'descend'],
       ellipsis: true,
       className: 'table-column',
-      onFilter: (val, record) =>
-        record['area']
-          .toString()
-          .toLowerCase()
-          .includes(val.toLowerCase()),
-      render: text => (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[dataTableInput]}
-          autoEscape
-          textToHighlight={text.toString()}
-        />
-      ),
     },
     {
       title: 'Confirmed',
@@ -122,6 +73,48 @@ const DataTable = props => {
     },
   ];
 
+  useEffect(() => {
+    if (!isLoading) {
+      const sortData = arr => arr.sort((a, b) => {
+        const vA = a.confirmed;
+        const vB = b.confirmed;
+        if (vA < vB) {
+            return 1;
+        } else if (vA > vB) {
+            return -1;
+        } else {
+            return 0;
+        }
+      });
+      const dataSource = sortData(Object.entries(latestUpdate).map(([k, v], i) => ({
+        key: `${i}`,
+        area: k,
+        confirmed: v.confirmed,
+        increment: v.increment.confirmed,
+        recovered: v.recovered,
+        deaths: v.deaths,
+        lastUpdate: moment(v.lastUpdate).format('YYYY-MM-DD'),
+        timeseries: (
+          <>
+            {timeSeries[k]
+              ? <Popover
+                placement='topRight'
+                content={<DataTableChart {...timeSeries[k]} />} 
+                trigger='click'
+              >
+                <Button shape='circle' icon={<SearchOutlined />} />
+              </Popover>
+              : 'No Data'
+            }
+          </>
+        ),
+      })));
+      batch(() => {
+        setTableData(dataSource);
+        setRenderData(dataSource);
+      });
+    }
+  }, [isLoading, latestUpdate, timeSeries]);
   return (
     <Card loading={isLoading} bodyStyle={{ height: '1080px' }}>
       <Meta
@@ -131,13 +124,46 @@ const DataTable = props => {
               <h6 style={{ margin: 0 }}>{`Total ${Object.keys(latestUpdate).length} Countries`}</h6>
             </Col>
             <Col>
-              <Input
-                allowClear
+              <Select
+                showSearch
+                bordered={false}
                 placeholder='Search Country'
-                value={dataTableInput}
-                suffix={<SearchOutlined />}
-                onChange={e => setDataTableInput(e.target.value)}
-              />
+                style={{
+                  width: '100%',
+                }}
+                onSelect={v => v === ''
+                  ? setRenderData(tableData)
+                  : setRenderData([{
+                    key: `single-data-${v}`,
+                    area: v,
+                    confirmed: latestUpdate[v].confirmed,
+                    increment: latestUpdate[v].increment.confirmed,
+                    recovered: latestUpdate[v].recovered,
+                    deaths: latestUpdate[v].deaths,
+                    lastUpdate: moment(latestUpdate[v].lastUpdate).format('YYYY-MM-DD'),
+                    timeseries: (
+                      <>
+                        {timeSeries[v]
+                          ? <Popover
+                            placement='topRight'
+                            content={<DataTableChart {...timeSeries[v]} />} 
+                            trigger='click'
+                          >
+                            <Button shape='circle' icon={<SearchOutlined />} />
+                          </Popover>
+                          : 'No Data'
+                        }
+                      </>
+                    ),
+                  }])
+                }
+              >
+                <Option key='Showall' value=''>Show All</Option>
+                <Option key='Worldwide' value='Worldwide'>Worldwide</Option>
+                {Object.keys(latestUpdate).sort().map(k => 
+                  k === 'Worldwide' ? null : <Option key={k} value={k}>{k}</Option>
+                )}
+              </Select>
             </Col>
           </Row>
         }
@@ -145,7 +171,7 @@ const DataTable = props => {
           <Table
             classNaame='data-table'
             loading={isLoading}
-            dataSource={sortData(dataSource)}
+            dataSource={renderData}
             columns={columns}
             pagination={false}
             scroll={{ y: 920 }}
