@@ -1,6 +1,6 @@
 {
-  "short_name": "covid-19",
-  "name": "covid-19",
+  "short_name": "covid19",
+  "name": "covid19",
   "icons": [
     {
       "src": "favicon.ico",
