@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Card } from 'antd';
 import Plot from 'react-plotly.js';
+import moment from 'moment';
+import getMsg from '../../utils/getFormattedMessage';
 
 const OpenLayerMapPopup = props => {
   const { sdata, renderData: {
@@ -10,25 +13,53 @@ const OpenLayerMapPopup = props => {
   } } = props;
   const { Meta } = Card;
 
+  const [labels, setLabels] = useState({
+    confirmed: 'Confirmed',
+    recovered: 'Recovered',
+    deaths: 'deaths',
+  });
+  const locale = useSelector(state => state.locale);
+  useEffect(() => {
+    if (locale === 'en') {
+      setLabels({
+        confirmed: 'Confirmed',
+        recovered: 'Recovered',
+        deaths: 'deaths',
+      });
+    } else {
+      setLabels({
+        confirmed: '确诊',
+        recovered: '治愈',
+        deaths: '死亡',
+      });
+    }
+  }, [locale]);
+
   return (
     <Card
       bodyStyle={{ padding: '5px 10px' }}
     >
       <Meta
-        title={sdata.province ? `${sdata.province}, ${sdata.country}` : sdata.country}
+        title={
+          <>
+            {sdata.province ? getMsg(`area.${sdata.province}`, {}, sdata.province) : null}
+            {sdata.province ? ', ' : null}
+            {getMsg(`area.${sdata.country}`, {}, sdata.country)}
+          </>
+        }
         description={
           <div>
-            <h6>Lastest Update:</h6>
-            <h6>{`${new Date(sdata.lastUpdated).toLocaleString()}`}</h6>
-            {lastConfirmed ? <h5>{`Confirmed: ${lastConfirmed.toLocaleString()}`}</h5> : null}
-            {lastRecovered ? <h5>{`Recoverd: ${lastRecovered.toLocaleString()}`}</h5> : null}
-            {lastDeaths ? <h5>{`Deaths: ${lastDeaths.toLocaleString()}`}</h5> : null}
+            <h6>{getMsg('map.popup.latestupdate')}:</h6>
+            <h6>{moment(new Date(sdata.lastUpdated)).format('YYYY-MM-DD')}</h6>
+            {lastConfirmed ? <h5>{`${labels.confirmed}: ${lastConfirmed.toLocaleString()}`}</h5> : null}
+            {lastRecovered ? <h5>{`${labels.recovered}: ${lastRecovered.toLocaleString()}`}</h5> : null}
+            {lastDeaths ? <h5>{`${labels.deaths}: ${lastDeaths.toLocaleString()}`}</h5> : null}
             <Plot
               data={[
                 {
                   x: [...sdata.time],
                   y: [...sdata.confirmed],
-                  name: 'Confirmed',
+                  name: labels.confirmed,
                   type: 'scatter',
                   mode: 'lines',
                   marker: { color: '#FF6E6D' },
@@ -36,7 +67,7 @@ const OpenLayerMapPopup = props => {
                 {
                   x: [...sdata.time],
                   y: [...sdata.recovered],
-                  name: 'Recovered',
+                  name: labels.recovered,
                   type: 'scatter',
                   mode: 'lines',
                   marker: { color: '#66B46A' },
@@ -44,7 +75,7 @@ const OpenLayerMapPopup = props => {
                 {
                   x: [...sdata.time],
                   y: [...sdata.deaths],
-                  name: 'Deaths',
+                  name: labels.deaths,
                   type: 'scatter',
                   mode: 'lines',
                   marker: { color: '#606060' },

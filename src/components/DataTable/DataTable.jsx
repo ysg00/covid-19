@@ -4,6 +4,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useSelector, batch } from 'react-redux';
 import moment from 'moment';
 import DataTableChart from './DataTableChart';
+import getMsg from '../../utils/getFormattedMessage';
 
 import './DataTable.scss';
 
@@ -18,7 +19,7 @@ const DataTable = props => {
 
   const columns = [
     {
-      title: 'Area',
+      title: getMsg('table.header.area'),
       dataIndex: 'area',
       key: 'area',
       sorter: (a, b) => a.area.localeCompare(b.area),
@@ -27,7 +28,7 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: 'Confirmed',
+      title: getMsg('global.confirmed'),
       dataIndex: 'confirmed',
       key: 'confirmed',
       sorter: (a, b) => a.confirmed - b.confirmed,
@@ -35,7 +36,7 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: 'Increment',
+      title: getMsg('global.increment'),
       dataIndex: 'increment',
       key: 'increment',
       sorter: (a, b) => a.increment - b.increment,
@@ -43,7 +44,7 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: 'Recovered',
+      title: getMsg('global.recovered'),
       dataIndex: 'recovered',
       key: 'recovered',
       sorter: (a, b) => a.recovered - b.recovered,
@@ -51,7 +52,7 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: 'Deaths',
+      title: getMsg('global.deaths'),
       dataIndex: 'deaths',
       key: 'deaths',
       sorter: (a, b) => a.deaths - b.deaths,
@@ -59,13 +60,13 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: 'LastUpdate',
+      title: getMsg('table.header.lastupdate'),
       dataIndex: 'lastUpdate',
       key: 'lastUpdate',
       className: 'text-nowrap',
     },
     {
-      title: 'Series',
+      title: getMsg('table.header.series'),
       dataIndex: 'timeseries',
       key: 'timeseries',
       className: 'text-nowrap',
@@ -87,7 +88,7 @@ const DataTable = props => {
       });
       const dataSource = sortData(Object.entries(latestUpdate).map(([k, v], i) => ({
         key: `${i}`,
-        area: k,
+        area: getMsg(`area.${k}`, {}, k),
         confirmed: v.confirmed,
         increment: v.increment.confirmed,
         recovered: v.recovered,
@@ -103,7 +104,7 @@ const DataTable = props => {
               >
                 <Button shape='circle' icon={<SearchOutlined />} />
               </Popover>
-              : 'No Data'
+              : getMsg('table.cell.nodata')
             }
           </>
         ),
@@ -119,14 +120,14 @@ const DataTable = props => {
       <Meta
         title={
           <Row>
-            <Col className='d-flex justify-content-start align-items-center' span={4}>
-              <h6 style={{ margin: 0 }}>{`Total ${Object.keys(latestUpdate).length} Countries`}</h6>
+            <Col className='d-flex justify-content-start align-items-center' span={6}>
+              <h6 style={{ margin: 0 }}>{getMsg('table.title.countrynum', { v1: Object.keys(latestUpdate).length })}</h6>
             </Col>
-            <Col>
+            <Col span={18}>
               <Select
                 showSearch
                 bordered={false}
-                placeholder='Search Country'
+                placeholder={getMsg('table.select.placeholder')}
                 style={{
                   width: '100%',
                 }}
@@ -134,7 +135,7 @@ const DataTable = props => {
                   ? setRenderData(tableData)
                   : setRenderData([{
                     key: `single-data-${v}`,
-                    area: v,
+                    area: getMsg(`area.${v}`, {}, v),
                     confirmed: latestUpdate[v].confirmed,
                     increment: latestUpdate[v].increment.confirmed,
                     recovered: latestUpdate[v].recovered,
@@ -150,17 +151,17 @@ const DataTable = props => {
                           >
                             <Button shape='circle' icon={<SearchOutlined />} />
                           </Popover>
-                          : 'No Data'
+                          : getMsg('table.cell.nodata')
                         }
                       </>
                     ),
                   }])
                 }
               >
-                <Option key='Showall' value=''>Show All</Option>
-                <Option key='Worldwide' value='Worldwide'>Worldwide</Option>
+                <Option key='Showall' value=''>{getMsg('table.select.showall')}</Option>
+                <Option key='Worldwide' value='Worldwide'>{getMsg('area.Worldwide')}</Option>
                 {Object.keys(latestUpdate).sort().map(k => 
-                  k === 'Worldwide' ? null : <Option key={k} value={k}>{k}</Option>
+                  k === 'Worldwide' ? null : <Option key={k} value={k}>{getMsg(`area.${k}`, {}, k)}</Option>
                 )}
               </Select>
             </Col>

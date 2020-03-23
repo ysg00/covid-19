@@ -3,7 +3,7 @@ import { batch, useDispatch } from 'react-redux';
 import Papa from 'papaparse';
 import moment from 'moment';
 
-const MainContainer = ({children, ...rest}) => {
+export default ({ children }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -163,6 +163,7 @@ const MainContainer = ({children, ...rest}) => {
           dispatch({ type: 'UPDATE_FEATURES', features });
           dispatch({ type: 'UPDATE_FEATUREIDX', featureIdx });
         });
+        console.log(features)
         dispatch({ type: 'DONE_LOADING'});
       }
     };
@@ -216,11 +217,10 @@ const MainContainer = ({children, ...rest}) => {
       }).catch(e => console.log(e));
     }).catch(e => console.log(e));
   }, [dispatch]);
+  
   return (
-    <div {...rest}>
+    <>
       {children}
-    </div>
+    </>
   );
 };
-
-export default MainContainer;

@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col, Statistic, Card, Carousel } from 'antd';
 import { ArrowUpOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
-import lodash from 'lodash';
+import getMsg from '../../utils/getFormattedMessage';
 import './CarouselData.scss';
 
 const CarouselData = props => {
@@ -14,17 +14,17 @@ const CarouselData = props => {
         {isLoading
           ? null
           : <Carousel effect='fade' autoplay dotPosition='bottom'>
-            {['Worldwide', 'US', 'China'].map(k => (
+            {['Worldwide', 'US', 'China', 'Singapore'].map(k => (
               <Card key={`data-card-${k}`}>
                 <Meta
-                  title={<h1>{k}</h1>}
+                  title={<h1>{getMsg(`area.${k}`)}</h1>}
                   description={
                     <Row>
                       {['confirmed', 'recovered', 'deaths'].map(dk => {
                         return (
                           <Col span={8} className='text-center' key={`data-card-${k}-col-${dk}`}>
                             <Statistic
-                              title={<h1>{lodash.capitalize(dk)}</h1>}
+                              title={<h1>{getMsg(`global.${dk}`)}</h1>}
                               value={data[k][dk]}
                             />
                             <Statistic

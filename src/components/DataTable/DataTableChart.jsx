@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import c3 from 'c3';
 import moment from 'moment';
-// import './TrendChart.scss';
 
 const DataTableChart = props => {
   const {
@@ -10,11 +10,29 @@ const DataTableChart = props => {
     recovered,
     deaths,
   } = props;
+  const [labels, setLabels] = useState({
+    confirmed: 'Confirmed',
+    recovered: 'Recovered',
+    deaths: 'deaths',
+  });
   const ref = useRef();
+  const locale = useSelector(state => state.locale);
   useEffect(() => {
-    const confirmedLabel = 'Confirmed';
-    const recoveredLabel = 'Recovered';
-    const deathLabel = 'Deaths';
+    if (locale === 'en') {
+      setLabels({
+        confirmed: 'Confirmed',
+        recovered: 'Recovered',
+        deaths: 'deaths',
+      });
+    } else {
+      setLabels({
+        confirmed: '确诊',
+        recovered: '治愈',
+        deaths: '死亡',
+      });
+    }
+  }, [locale]);
+  useEffect(() => {
     const total = [...confirmed, ...recovered, ...deaths]
     const tmpMax = Math.max(...total);
     let yMax = tmpMax;
@@ -36,19 +54,19 @@ const DataTableChart = props => {
         x: 'x',
         columns: [
           ['x', ...time],
-          [confirmedLabel, ...confirmed],
-          [recoveredLabel, ...recovered],
-          [deathLabel, ...deaths],
+          [labels.confirmed, ...confirmed],
+          [labels.recovered, ...recovered],
+          [labels.deaths, ...deaths],
         ],
         types: {
-          [confirmedLabel]: 'line',
-          [recoveredLabel]: 'line',
-          [deathLabel]: 'line',
+          [labels.confirmed]: 'line',
+          [labels.recovered]: 'line',
+          [labels.deaths]: 'line',
         },
         colors: {
-          [confirmedLabel]: '#FF6E6D',
-          [recoveredLabel]: '#66B46A',
-          [deathLabel]: '#606060',
+          [labels.confirmed]: '#FF6E6D',
+          [labels.recovered]: '#66B46A',
+          [labels.deaths]: '#606060',
         },
       },
       point: {
@@ -91,7 +109,7 @@ const DataTableChart = props => {
         },
       },
     });
-  }, [time, confirmed, recovered, deaths]);
+  }, [time, confirmed, recovered, deaths, labels]);
 
   return (
     <div className='trend-chart' ref={ref} />

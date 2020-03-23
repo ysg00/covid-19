@@ -1,18 +1,17 @@
-const initialState = {
+export default (state = {
   darkMode: false,
+  locale: 'en',
   isLoading: true,
   timeSeries: {},
   latestUpdate: {},
   featureIdx: {},
   features: {},
-};
-
-export default (state = initialState, action) => {
+}, action) => {
   switch (action.type) {
-    case 'DONE_LOADING':
+    case 'SET_LOCALE':
       return {
         ...state,
-        isLoading: false,
+        locale: action.locale,
       };
     case 'TOGGLE_DARK_MODE':
       return {
@@ -38,6 +37,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         featureIdx: action.featureIdx,
+      };
+    case 'DONE_LOADING':
+      return {
+        ...state,
+        isLoading: false,
       };
     default:
       return state;

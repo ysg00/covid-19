@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import * as clist from 'country-list';
 import lodash from 'lodash';
 import Script from 'react-load-script';
+import getMsg from './../../utils/getFormattedMessage';
 
 const GoogleTrend = props => {
   const { Meta } = Card;
@@ -14,6 +15,11 @@ const GoogleTrend = props => {
 
   const handleScriptLoad = ({ type, time, target, geo }) => {
     const keyword = 'Corona Virus';
+    let query = `q=${encodeURI(keyword)}`;
+    if (geo) {
+      query += `&geo=${geo.toUpperCase()}`
+    }
+    query += `&date=${time}`;
     window.trends.embed.renderExploreWidgetTo(
       document.getElementById(target),
       type,
@@ -23,9 +29,7 @@ const GoogleTrend = props => {
         property: ''
       },
       {
-        exploreQuery: geo
-          ? `q=${encodeURI(keyword)}&geo=${geo.toUpperCase()}&date=${time}`
-          : `q=${encodeURI(keyword)}&date=${time}`,
+        exploreQuery: query,
         guestPath: 'https://trends.google.com:443/trends/embed/'
       }
     );
@@ -70,9 +74,9 @@ const GoogleTrend = props => {
                 }}
                 onChange={v => setSearchArea(clist.getNameList()[v])}
               >
-                <Option key='worldwide' value='worldwide'>Worldwide</Option>
+                <Option key='worldwide' value='worldwide'>{getMsg('area.Worldwide')}</Option>
                 {Object.keys(clist.getNameList()).sort().map(k => 
-                  <Option key={k} value={k}>{lodash.capitalize(k)}</Option>
+                  <Option key={k} value={k}>{getMsg(`area.${lodash.capitalize(k)}`, {}, lodash.capitalize(k))}</Option>
                 )}
               </Select>
             </Col>
@@ -85,13 +89,13 @@ const GoogleTrend = props => {
                 }}
                 onChange={v => setSearchTime(v)}
               >
-                <Option value='now 1-H'>Past Hour</Option>
-                <Option value='now 4-H'>Past 4 Hours</Option>
-                <Option value='now 1-d'>Past Day</Option>
-                <Option value='now 7-d'>Past Week</Option>
-                <Option value='today 1-m'>Past Month</Option>
-                <Option value='today 3-m'>Past 3 Months</Option>
-                <Option value='today 2-m'>Past Year</Option>
+                <Option value='now 1-H'>{getMsg('gt.time.now 1-H')}</Option>
+                <Option value='now 4-H'>{getMsg('gt.time.now 4-H')}</Option>
+                <Option value='now 1-d'>{getMsg('gt.time.now 1-d')}</Option>
+                <Option value='now 7-d'>{getMsg('gt.time.now 7-d')}</Option>
+                <Option value='today 1-m'>{getMsg('gt.time.today 1-m')}</Option>
+                <Option value='today 3-m'>{getMsg('gt.time.today 3-m')}</Option>
+                <Option value='today 12-m'>{getMsg('gt.time.today 12-m')}</Option>
               </Select>
             </Col>
           </Row>

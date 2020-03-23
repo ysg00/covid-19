@@ -1,6 +1,7 @@
 import React from 'react';
 import { List } from 'antd';
 import { useSelector } from 'react-redux';
+import getMsg from '../../utils/getFormattedMessage';
 
 const OpenLayerMapSideBar = props => {
   const features = useSelector(state => state.features);
@@ -34,22 +35,27 @@ const OpenLayerMapSideBar = props => {
       renderItem={item => {
         const dLen = item.properties.confirmed.length;
         const { country, province } = item.properties;
+        
         return (
           <List.Item
             id={`data-list-item-${country}-${province}`}
           >
             <List.Item.Meta
-              title={province === '' ? `${country}` : `${province}, ${country}`}
+              title={
+                <>
+                  {province ? getMsg(`area.${province}`, {}, province) : null}{province ? ', ' : null}{getMsg(`area.${country}`, {}, country)}
+                </>
+              }
               description={
                 <>
                   <h6>
-                    {`confirmed: ${item.properties.confirmed[dLen - 1].count}`}
+                    {getMsg('global.confirmed')}: {item.properties.confirmed[dLen - 1].count}
                   </h6>
                   <h6>
-                    {`recovered: ${item.properties.recovered[dLen - 1].count}`}
+                    {getMsg('global.recovered')}: {item.properties.recovered[dLen - 1].count}
                   </h6>
                   <h6>
-                    {`deaths: ${item.properties.deaths[dLen - 1].count}`}
+                    {getMsg('global.deaths')}: {item.properties.deaths[dLen - 1].count}
                   </h6>
                 </>
               }

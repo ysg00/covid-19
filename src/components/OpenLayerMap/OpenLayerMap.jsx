@@ -39,12 +39,12 @@ const OpenLayerMap = props => {
         const radiusFactor = Math.log10(maxResolution / resolution) * 0.5 + 1;
         // const country = feature.get('country');
         // const province = feature.get('province');
-  
+
         const lastIndex = feature.get('confirmed').length - 1;
         const confirmed = feature.get('confirmed')[lastIndex].count;
         const recovered = feature.get('recovered')[lastIndex].count;
         const deaths = feature.get('deaths')[lastIndex].count;
-  
+
         let confirmedRadius = Math.log10(confirmed + 1) * 10;
         let recoveredRadius = Math.sqrt((recovered + deaths) / confirmed) * confirmedRadius;
         let deathsRadius = Math.sqrt(deaths / confirmed) * confirmedRadius;
@@ -88,7 +88,7 @@ const OpenLayerMap = props => {
         const confirmedCounts = [];
         const recoveredCounts = [];
         const deathsCounts = [];
-  
+
         for (let i = 0; i <= confirmed.length - 1; i++) {
           const c = confirmed[i].count;
           const r = recovered[i].count;
@@ -101,7 +101,7 @@ const OpenLayerMap = props => {
             deathsCounts.push(d);
           }
         };
-  
+
         return {
           country: country,
           province: province,
@@ -112,11 +112,11 @@ const OpenLayerMap = props => {
           deaths: deathsCounts
         };
       };
-  
+
       const showFeatureStats = (feature, coor) => {
         showPopup(calculateStats(feature), coor);
       };
-  
+
       const showPopup = (stats, coor) => {
         const lastIndex = stats.confirmed.length - 1;
         const lastConfirmed = stats.confirmed[lastIndex];
