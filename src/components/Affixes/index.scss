@@ -1,0 +1,23 @@
+.affix-col {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  padding-right: 100px;
+}
+
+.affix-btn {
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 40px !important;
+  width: 40px;
+  padding: 0 !important;
+  &-lang {
+    @extend .affix-btn;
+  }
+  &-github {
+    @extend .affix-btn;
+    font-size: 20px !important;
+  }
+}

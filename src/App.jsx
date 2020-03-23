@@ -5,6 +5,7 @@ import CarouselData from './components/CarouselData/CarouselData';
 import OpenLayerMap from './components/OpenLayerMap/OpenLayerMap';
 import DataTable from './components/DataTable/DataTable';
 import GoogleTrend from './components/GoogleTrend/GoogleTrend';
+import Affixes from './components/Affixes';
 import getMsg from './utils/getFormattedMessage';
 import './App.scss';
 
@@ -41,6 +42,7 @@ const App = props => {
             </Col>
           </Row>
         </Footer>
+        <Affixes />
       </Layout>
     </MainContainer>
   );
