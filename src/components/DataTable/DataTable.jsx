@@ -22,8 +22,6 @@ const DataTable = props => {
       title: getMsg('table.header.area'),
       dataIndex: 'area',
       key: 'area',
-      sorter: (a, b) => a.area.localeCompare(b.area),
-      sortDirections: ['ascend', 'descend'],
       ellipsis: true,
       className: 'text-nowrap',
     },

@@ -14,6 +14,7 @@ export default ({ children }) => {
     const latestUpdate = {};
     const lastUpdate = {};
     const yesterdayData = {};
+    let globalIdx = 0;
     const yesterday = moment(new Date().setDate(new Date().getDate() - 1)).format('MM-DD-YYYY');
     const urls = [
       'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/ncov_cases/FeatureServer/2/query?where=1%3D1&outFields=*&f=json',
@@ -22,20 +23,26 @@ export default ({ children }) => {
       'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv',
       `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/${yesterday}.csv`,
     ];
+    const speciallyHandleCondition = (country, province) => {
+      // handle special case due to the data
+      return (country === 'US' && ((province !== '' && /.*, [A-Z][A-Z] ?/.test(province)) || province === 'Washington, D.C.'))
+        || (country === 'Australia' && province === 'From Diamond Princess');
+    };
     const generateData = (csv, dataKey) => {
       // jhu csv header format: [province, country, lat, long, date...]
       const header = csv[0];
-      csv.slice(1).forEach((arr, i) => {
-        if (arr[1]) {
-          if (features[i]) {
-            features[i].properties[dataKey] = arr.slice(4).map((count, ii) => ({
+      csv.slice(1).forEach(arr => {
+        if (arr[1] && !speciallyHandleCondition(arr[1], arr[0])) {
+          const currentFeatureIdx = featureIdx[`${arr[1]}-${arr[0]}`];
+          if (currentFeatureIdx !== undefined) {
+            features[currentFeatureIdx].properties[dataKey] = arr.slice(4).map((count, ii) => ({
               time: new Date(header[ii + 4]),
               count: count === '' ? parseInt(arr[ii + 3]) : parseInt(count),
             }));
           } else {
-            featureIdx[`${arr[1]}-${arr[0]}`] = i;
+            featureIdx[`${arr[1]}-${arr[0]}`] = globalIdx;
             features.push({
-              id: i,
+              id: globalIdx,
               type: 'Feature',
               geometry: {
                 type: 'Point',
@@ -50,6 +57,7 @@ export default ({ children }) => {
                 })),
               }
             });
+            globalIdx += 1;
           }
           if (lastUpdate[arr[1]]) {
             if (timeSeries[arr[1]]) {
@@ -163,7 +171,6 @@ export default ({ children }) => {
           dispatch({ type: 'UPDATE_FEATURES', features });
           dispatch({ type: 'UPDATE_FEATUREIDX', featureIdx });
         });
-        console.log(features)
         dispatch({ type: 'DONE_LOADING'});
       }
     };
@@ -217,7 +224,7 @@ export default ({ children }) => {
       }).catch(e => console.log(e));
     }).catch(e => console.log(e));
   }, [dispatch]);
-  
+
   return (
     <>
       {children}
