@@ -1,6 +1,6 @@
 {
   "name": "covid-19",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "homepage": "https://ysg00.github.io/covid-19/",
   "dependencies": {
