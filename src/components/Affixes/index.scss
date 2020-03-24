@@ -12,6 +12,15 @@
   height: 40px !important;
   width: 40px;
   padding: 0 !important;
+  background-color: rgba(0, 0, 0, 0.45) !important;
+  border: none !important;
+  color: white !important;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.65) !important;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.45) !important;
+  }
   &-lang {
     @extend .affix-btn;
   }

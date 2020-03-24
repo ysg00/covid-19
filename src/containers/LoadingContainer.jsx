@@ -25,8 +25,19 @@ export default ({ children }) => {
     ];
     const speciallyHandleCondition = (country, province) => {
       // handle special case due to the data
-      return (country === 'US' && ((province !== '' && /.*, [A-Z][A-Z] ?/.test(province)) || province === 'Washington, D.C.'))
-        || (country === 'Australia' && province === 'From Diamond Princess');
+      return (
+        (
+          country === 'US' 
+            &&(
+              ( province !== '' && /.*, [A-Z][A-Z] ?/.test(province)) 
+                || province === 'Washington, D.C.' 
+                || province === 'US'
+              )
+        ) || (
+          country === 'Australia'
+            && province === 'From Diamond Princess'
+        )
+      );
     };
     const generateData = (csv, dataKey) => {
       // jhu csv header format: [province, country, lat, long, date...]
