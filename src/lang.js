@@ -656,6 +656,7 @@ export default {
     'area.Cayman Islands': '开曼群岛',
     'area.Sint Maarten': '荷属圣马丁',
     'area.From Diamond Princess': '钻石公主号',
+    'area.United States Virgin Islands': '维尔京群岛',
   },
   en: {
     'global.confirmed': 'Confirmed',

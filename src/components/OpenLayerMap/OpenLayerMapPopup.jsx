@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Card } from 'antd';
-import Plot from 'react-plotly.js';
-import moment from 'moment';
-import getMsg from '../../utils/getFormattedMessage';
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip,
+} from 'recharts';
+import { getFormattedMessage, getFormattedDateYYYYMMDD } from '../../utils/Formatter';
 
 const OpenLayerMapPopup = props => {
   const { sdata, renderData: {
@@ -12,13 +13,19 @@ const OpenLayerMapPopup = props => {
     lastDeaths,
   } } = props;
   const { Meta } = Card;
-
   const [labels, setLabels] = useState({
     confirmed: 'Confirmed',
     recovered: 'Recovered',
-    deaths: 'deaths',
+    deaths: 'Deaths',
   });
   const locale = useSelector(state => state.locale);
+  const constructTimeSeriesData = data => data.confirmed.map((_, i) => ({
+    time: data.time[i],
+    [labels.confirmed]: data.confirmed[i],
+    [labels.recovered]: data.recovered[i],
+    [labels.deaths]: data.deaths[i],
+  }));
+
   useEffect(() => {
     if (locale === 'en') {
       setLabels({
@@ -42,65 +49,57 @@ const OpenLayerMapPopup = props => {
       <Meta
         title={
           <>
-            {sdata.province ? getMsg(`area.${sdata.province}`, {}, sdata.province) : null}
+            {sdata.province ? getFormattedMessage(`area.${sdata.province}`, {}, sdata.province) : null}
             {sdata.province ? ', ' : null}
-            {getMsg(`area.${sdata.country}`, {}, sdata.country)}
+            {getFormattedMessage(`area.${sdata.country}`, {}, sdata.country)}
           </>
         }
         description={
           <div>
-            <h6>{getMsg('map.popup.latestupdate')}:</h6>
-            <h6>{moment(new Date(sdata.lastUpdated)).format('YYYY-MM-DD')}</h6>
+            <h6>{getFormattedMessage('map.popup.latestupdate')}:</h6>
+            <h6>{getFormattedDateYYYYMMDD(new Date(sdata.lastUpdated))}</h6>
             {lastConfirmed ? <h5>{`${labels.confirmed}: ${lastConfirmed.toLocaleString()}`}</h5> : null}
             {lastRecovered ? <h5>{`${labels.recovered}: ${lastRecovered.toLocaleString()}`}</h5> : null}
             {lastDeaths ? <h5>{`${labels.deaths}: ${lastDeaths.toLocaleString()}`}</h5> : null}
-            <Plot
-              data={[
-                {
-                  x: [...sdata.time],
-                  y: [...sdata.confirmed],
-                  name: labels.confirmed,
-                  type: 'scatter',
-                  mode: 'lines',
-                  marker: { color: '#FF6E6D' },
-                },
-                {
-                  x: [...sdata.time],
-                  y: [...sdata.recovered],
-                  name: labels.recovered,
-                  type: 'scatter',
-                  mode: 'lines',
-                  marker: { color: '#66B46A' },
-                },
-                {
-                  x: [...sdata.time],
-                  y: [...sdata.deaths],
-                  name: labels.deaths,
-                  type: 'scatter',
-                  mode: 'lines',
-                  marker: { color: '#606060' },
-                },
-              ]}
-              layout={{
-                width: 200,
-                height: 200,
-                showlegend: false,
-                margin: {
-                  l: 30,
-                  t: 10,
-                  r: 10,
-                  b: 24,
-                },
-                plot_bgcolor: '#f0f2f5',
-                paper_bgcolor: '#f0f2f5',
-                xaxis: {
-                  showticklabels: false,
-                },
-              }}
-              config={{
-                displayModeBar: false,
-              }}
-            />
+            <LineChart
+              width={260}
+              height={200}
+              data={constructTimeSeriesData(sdata)}
+              margin={{ top: 4, right: 10, bottom: 0, left: -20 }}
+            >
+              <XAxis
+                type='category'
+                dataKey="time"
+                tickSize={5}
+              />
+              <YAxis
+                tickFormatter={t => t >= 1000 ? `${(t / 1000)}k` : t}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'rbga(255, 255, 255, 0)',
+                  border: 'none',
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey={labels.confirmed}
+                stroke="#FF6E6D"
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey={labels.recovered}
+                stroke="#66B46A"
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey={labels.deaths}
+                stroke="#606060"
+                dot={false}
+              />
+            </LineChart>
           </div>
         }
       />

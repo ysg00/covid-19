@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Select, Row, Col } from 'antd';
 import { useSelector } from 'react-redux';
 import * as clist from 'country-list';
-import lodash from 'lodash';
 import Script from 'react-load-script';
-import getMsg from './../../utils/getFormattedMessage';
+import { getFormattedMessage, getCapitalizedString } from './../../utils/Formatter';
 
 const GoogleTrend = props => {
   const { Meta } = Card;
@@ -74,9 +73,9 @@ const GoogleTrend = props => {
                 }}
                 onChange={v => setSearchArea(clist.getNameList()[v])}
               >
-                <Option key='worldwide' value='worldwide'>{getMsg('area.Worldwide')}</Option>
+                <Option key='worldwide' value='worldwide'>{getFormattedMessage('area.Worldwide')}</Option>
                 {Object.keys(clist.getNameList()).sort().map(k => 
-                  <Option key={k} value={k}>{getMsg(`area.${lodash.capitalize(k)}`, {}, lodash.capitalize(k))}</Option>
+                  <Option key={k} value={k}>{getFormattedMessage(`area.${getCapitalizedString(k)}`, {}, getCapitalizedString(k))}</Option>
                 )}
               </Select>
             </Col>
@@ -89,13 +88,13 @@ const GoogleTrend = props => {
                 }}
                 onChange={v => setSearchTime(v)}
               >
-                <Option value='now 1-H'>{getMsg('gt.time.now 1-H')}</Option>
-                <Option value='now 4-H'>{getMsg('gt.time.now 4-H')}</Option>
-                <Option value='now 1-d'>{getMsg('gt.time.now 1-d')}</Option>
-                <Option value='now 7-d'>{getMsg('gt.time.now 7-d')}</Option>
-                <Option value='today 1-m'>{getMsg('gt.time.today 1-m')}</Option>
-                <Option value='today 3-m'>{getMsg('gt.time.today 3-m')}</Option>
-                <Option value='today 12-m'>{getMsg('gt.time.today 12-m')}</Option>
+                <Option value='now 1-H'>{getFormattedMessage('gt.time.now 1-H')}</Option>
+                <Option value='now 4-H'>{getFormattedMessage('gt.time.now 4-H')}</Option>
+                <Option value='now 1-d'>{getFormattedMessage('gt.time.now 1-d')}</Option>
+                <Option value='now 7-d'>{getFormattedMessage('gt.time.now 7-d')}</Option>
+                <Option value='today 1-m'>{getFormattedMessage('gt.time.today 1-m')}</Option>
+                <Option value='today 3-m'>{getFormattedMessage('gt.time.today 3-m')}</Option>
+                <Option value='today 12-m'>{getFormattedMessage('gt.time.today 12-m')}</Option>
               </Select>
             </Col>
           </Row>

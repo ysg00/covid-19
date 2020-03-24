@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Table, Card, Popover, Button, Select, Row, Col } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useSelector, batch } from 'react-redux';
-import moment from 'moment';
 import DataTableChart from './DataTableChart';
-import getMsg from '../../utils/getFormattedMessage';
+import { getFormattedMessage, getFormattedDateYYYYMMDD } from './../../utils/Formatter';
+
 
 import './DataTable.scss';
 
@@ -19,14 +19,14 @@ const DataTable = props => {
 
   const columns = [
     {
-      title: getMsg('table.header.area'),
+      title: getFormattedMessage('table.header.area'),
       dataIndex: 'area',
       key: 'area',
       ellipsis: true,
       className: 'text-nowrap',
     },
     {
-      title: getMsg('global.confirmed'),
+      title: getFormattedMessage('global.confirmed'),
       dataIndex: 'confirmed',
       key: 'confirmed',
       sorter: (a, b) => a.confirmed - b.confirmed,
@@ -34,7 +34,7 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: getMsg('global.increment'),
+      title: getFormattedMessage('global.increment'),
       dataIndex: 'increment',
       key: 'increment',
       sorter: (a, b) => a.increment - b.increment,
@@ -42,7 +42,7 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: getMsg('global.recovered'),
+      title: getFormattedMessage('global.recovered'),
       dataIndex: 'recovered',
       key: 'recovered',
       sorter: (a, b) => a.recovered - b.recovered,
@@ -50,7 +50,7 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: getMsg('global.deaths'),
+      title: getFormattedMessage('global.deaths'),
       dataIndex: 'deaths',
       key: 'deaths',
       sorter: (a, b) => a.deaths - b.deaths,
@@ -58,13 +58,13 @@ const DataTable = props => {
       className: 'text-nowrap',
     },
     {
-      title: getMsg('table.header.lastupdate'),
+      title: getFormattedMessage('table.header.lastupdate'),
       dataIndex: 'lastUpdate',
       key: 'lastUpdate',
       className: 'text-nowrap',
     },
     {
-      title: getMsg('table.header.series'),
+      title: getFormattedMessage('table.header.series'),
       dataIndex: 'timeseries',
       key: 'timeseries',
       className: 'text-nowrap',
@@ -84,14 +84,15 @@ const DataTable = props => {
             return 0;
         }
       });
-      const dataSource = sortData(Object.entries(latestUpdate).map(([k, v], i) => ({
+      const dataSource = sortData(Object.entries(latestUpdate).map(([k, v], i) => {
+        return {
         key: `${i}`,
-        area: getMsg(`area.${k}`, {}, k),
+        area: getFormattedMessage(`area.${k}`, {}, k),
         confirmed: v.confirmed,
         increment: v.increment.confirmed,
         recovered: v.recovered,
         deaths: v.deaths,
-        lastUpdate: moment(v.lastUpdate).format('YYYY-MM-DD'),
+        lastUpdate: getFormattedDateYYYYMMDD(new Date(v.lastUpdate)),
         timeseries: (
           <>
             {timeSeries[k]
@@ -102,11 +103,11 @@ const DataTable = props => {
               >
                 <Button shape='circle' icon={<SearchOutlined />} />
               </Popover>
-              : getMsg('table.cell.nodata')
+              : getFormattedMessage('table.cell.nodata')
             }
           </>
         ),
-      })));
+      }}));
       batch(() => {
         setTableData(dataSource);
         setRenderData(dataSource);
@@ -119,13 +120,13 @@ const DataTable = props => {
         title={
           <Row>
             <Col className='d-flex justify-content-start align-items-center' span={6}>
-              <h6 style={{ margin: 0 }}>{getMsg('table.title.countrynum', { v1: Object.keys(latestUpdate).length })}</h6>
+              <h6 style={{ margin: 0 }}>{getFormattedMessage('table.title.countrynum', { v1: Object.keys(latestUpdate).length })}</h6>
             </Col>
             <Col span={18}>
               <Select
                 showSearch
                 bordered={false}
-                placeholder={getMsg('table.select.placeholder')}
+                placeholder={getFormattedMessage('table.select.placeholder')}
                 style={{
                   width: '100%',
                 }}
@@ -133,12 +134,12 @@ const DataTable = props => {
                   ? setRenderData(tableData)
                   : setRenderData([{
                     key: `single-data-${v}`,
-                    area: getMsg(`area.${v}`, {}, v),
+                    area: getFormattedMessage(`area.${v}`, {}, v),
                     confirmed: latestUpdate[v].confirmed,
                     increment: latestUpdate[v].increment.confirmed,
                     recovered: latestUpdate[v].recovered,
                     deaths: latestUpdate[v].deaths,
-                    lastUpdate: moment(latestUpdate[v].lastUpdate).format('YYYY-MM-DD'),
+                    lastUpdate: getFormattedDateYYYYMMDD(new Date(latestUpdate[v].lastUpdate)),
                     timeseries: (
                       <>
                         {timeSeries[v]
@@ -149,17 +150,17 @@ const DataTable = props => {
                           >
                             <Button shape='circle' icon={<SearchOutlined />} />
                           </Popover>
-                          : getMsg('table.cell.nodata')
+                          : getFormattedMessage('table.cell.nodata')
                         }
                       </>
                     ),
                   }])
                 }
               >
-                <Option key='Showall' value=''>{getMsg('table.select.showall')}</Option>
-                <Option key='Worldwide' value='Worldwide'>{getMsg('area.Worldwide')}</Option>
+                <Option key='Showall' value=''>{getFormattedMessage('table.select.showall')}</Option>
+                <Option key='Worldwide' value='Worldwide'>{getFormattedMessage('area.Worldwide')}</Option>
                 {Object.keys(latestUpdate).sort().map(k => 
-                  k === 'Worldwide' ? null : <Option key={k} value={k}>{getMsg(`area.${k}`, {}, k)}</Option>
+                  k === 'Worldwide' ? null : <Option key={k} value={k}>{getFormattedMessage(`area.${k}`, {}, k)}</Option>
                 )}
               </Select>
             </Col>

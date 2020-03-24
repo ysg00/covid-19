@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import c3 from 'c3';
-import moment from 'moment';
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip,
+} from 'recharts';
+import { getFormattedDateYYYYMMDD } from './../../utils/Formatter';
 
 const DataTableChart = props => {
   const {
@@ -15,7 +17,6 @@ const DataTableChart = props => {
     recovered: 'Recovered',
     deaths: 'deaths',
   });
-  const ref = useRef();
   const locale = useSelector(state => state.locale);
   useEffect(() => {
     if (locale === 'en') {
@@ -32,87 +33,52 @@ const DataTableChart = props => {
       });
     }
   }, [locale]);
-  useEffect(() => {
-    const total = [...confirmed, ...recovered, ...deaths]
-    const tmpMax = Math.max(...total);
-    let yMax = tmpMax;
-    while (yMax % 1000 !== 0) {
-      yMax += 1;
-    }
-    const tickVal = yMax / 4;
-    const yRange = [0, tickVal, tickVal*2, tickVal*3, yMax];
-    const tickFormatter = x => (x%250 === 0 && x !== 0? `${(x/1000).toFixed(2)}k` : `${x}`);
-    c3.generate({
-      bindto: ref.current,
-      padding: {
-        left: 50,
-        top: 10,
-        right: 16,
-        bottom: -10,
-      },
-      data: {
-        x: 'x',
-        columns: [
-          ['x', ...time],
-          [labels.confirmed, ...confirmed],
-          [labels.recovered, ...recovered],
-          [labels.deaths, ...deaths],
-        ],
-        types: {
-          [labels.confirmed]: 'line',
-          [labels.recovered]: 'line',
-          [labels.deaths]: 'line',
-        },
-        colors: {
-          [labels.confirmed]: '#FF6E6D',
-          [labels.recovered]: '#66B46A',
-          [labels.deaths]: '#606060',
-        },
-      },
-      point: {
-        show: false,
-      },
-      axis: {
-        x: {
-          type: 'timeseries',
-          tick: {
-            count: 2,
-            values: ['2020-02-01', '2020-03-01'],
-            format: '%b',
-            multiline: false,
-          },
-        },
-        y: {
-          type: 'linear',
-          min: 0,
-          max: yMax,
-          padding: {
-            bottom: 0,
-            top: 0,
-          },
-          tick: {
-            count: 5,
-            values: yRange,
-            format: tickFormatter,
-          },
-        },
-      },
-      tooltip: {
-        format: {
-          title: (_, idx) => moment(time[idx]).format('YYYY-MM-DD'),
-        },
-        position(data, width, height, element) {
-          return {
-            top: 25,
-            left: 55,
-          };
-        },
-      },
-    });
-  }, [time, confirmed, recovered, deaths, labels]);
-
+  
   return (
-    <div className='trend-chart' ref={ref} />
+    <LineChart
+      width={450}
+      height={300}
+      data={confirmed.map((_, i) => ({
+        time: getFormattedDateYYYYMMDD(time[i]),
+        [labels.confirmed]: confirmed[i],
+        [labels.recovered]: recovered[i],
+        [labels.deaths]: deaths[i],
+      }))}
+      margin={{ top: 16, right: 10, bottom: 4, left: -16 }}
+    >
+      <XAxis
+        type='category'
+        dataKey="time"
+        tickSize={5}
+      />
+      <YAxis
+        tickFormatter={t => t >= 1000 ? `${(t / 1000)}k` : t}
+      />
+      <Tooltip
+        contentStyle={{
+          backgroundColor: 'rbga(255, 255, 255, 0)',
+          border: 'none',
+        }}
+      />
+      <Line
+        type="monotone"
+        dataKey={labels.confirmed}
+        stroke="#FF6E6D"
+        dot={false}
+      />
+      <Line
+        type="monotone"
+        dataKey={labels.recovered}
+        stroke="#66B46A"
+        dot={false}
+      />
+      <Line
+        type="monotone"
+        dataKey={labels.deaths}
+        stroke="#606060"
+        dot={false}
+      />
+    </LineChart>
   );
 };
 

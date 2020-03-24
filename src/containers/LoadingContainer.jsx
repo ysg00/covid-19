@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { batch, useDispatch } from 'react-redux';
 import Papa from 'papaparse';
-import moment from 'moment';
+import { getFormattedDateMMDDYYYY } from './../utils/Formatter';
 
 export default ({ children }) => {
   const dispatch = useDispatch();
@@ -15,7 +15,7 @@ export default ({ children }) => {
     const lastUpdate = {};
     const yesterdayData = {};
     let globalIdx = 0;
-    const yesterday = moment(new Date().setDate(new Date().getDate() - 1)).format('MM-DD-YYYY');
+    const yesterday = getFormattedDateMMDDYYYY(new Date(new Date().setDate(new Date().getDate() - 1)));
     const urls = [
       'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/ncov_cases/FeatureServer/2/query?where=1%3D1&outFields=*&f=json',
       'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv',
@@ -120,21 +120,21 @@ export default ({ children }) => {
           deaths: 0,
         };
         csvData.slice(1).forEach(arr => {
-          if (arr[1]) {
-            if (yesterdayData[arr[1]]) {
-              yesterdayData[arr[1]].confirmed += parseInt(arr[3]);
-              yesterdayData[arr[1]].recovered += parseInt(arr[5]);
-              yesterdayData[arr[1]].deaths += parseInt(arr[4]);
+          if (arr[3]) {
+            if (yesterdayData[arr[3]]) {
+              yesterdayData[arr[3]].confirmed += parseInt(arr[7]);
+              yesterdayData[arr[3]].recovered += parseInt(arr[9]);
+              yesterdayData[arr[3]].deaths += parseInt(arr[8]);
             } else {
-              yesterdayData[arr[1]] = {
-                confirmed: parseInt(arr[3]),
-                recovered: parseInt(arr[5]),
-                deaths: parseInt(arr[4]),
+              yesterdayData[arr[3]] = {
+                confirmed: parseInt(arr[7]),
+                recovered: parseInt(arr[9]),
+                deaths: parseInt(arr[8]),
               };
             }
-            worldwideInc.confirmed += parseInt(arr[3]);
-            worldwideInc.recovered += parseInt(arr[5]);
-            worldwideInc.deaths += parseInt(arr[4]);
+            worldwideInc.confirmed += parseInt(arr[7]);
+            worldwideInc.recovered += parseInt(arr[9]);
+            worldwideInc.deaths += parseInt(arr[8]);
           }
         });
         Object.entries(lastUpdate).forEach(([k, v]) => {
@@ -171,7 +171,6 @@ export default ({ children }) => {
           } else {
             delete timeSeries[k];
           }
-
         });
         batch(() => {
           dispatch({ type: 'UPDATE_TIMESERIES', timeSeries: {

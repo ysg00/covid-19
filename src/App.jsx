@@ -6,7 +6,7 @@ import OpenLayerMap from './components/OpenLayerMap/OpenLayerMap';
 import DataTable from './components/DataTable/DataTable';
 import GoogleTrend from './components/GoogleTrend/GoogleTrend';
 import Affixes from './components/Affixes';
-import getMsg from './utils/getFormattedMessage';
+import { getFormattedMessage }from './utils/Formatter';
 import './App.scss';
 
 const App = props => {
@@ -36,7 +36,7 @@ const App = props => {
         <Footer>
           <Row>
             <Col offset={2}>
-              {getMsg('app.footer.datasource')}
+              {getFormattedMessage('app.footer.datasource')}
               <br />
               <a href='https://github.com/CSSEGISandData/COVID-19'>https://github.com/CSSEGISandData/COVID-19</a>
             </Col>

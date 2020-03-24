@@ -1,11 +1,11 @@
 import React from 'react';
 import { Tooltip, BackTop } from 'antd';
-import getMsg from './../../utils/getFormattedMessage';
+import { getFormattedMessage } from './../../utils/Formatter';
 
 export default props => (
   <Tooltip
     placement='left'
-    title={getMsg('affix.backtotop')}
+    title={getFormattedMessage('affix.backtotop')}
     mouseEnterDelay={0.5}
   >
     <BackTop />

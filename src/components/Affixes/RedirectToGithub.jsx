@@ -1,7 +1,7 @@
 import React from 'react';
 import { Affix, Tooltip, Button, Row, Col } from 'antd';
 import { GithubOutlined } from '@ant-design/icons';
-import getMsg from './../../utils/getFormattedMessage';
+import { getFormattedMessage } from './../../utils/Formatter';
 
 export default props => {
   return (
@@ -10,7 +10,7 @@ export default props => {
         <Col className='affix-col' span={24}>
           <Tooltip
             placement='left'
-            title={getMsg('affix.github')}
+            title={getFormattedMessage('affix.github')}
             mouseEnterDelay={0.5}
           >
             <Button

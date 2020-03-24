@@ -8,10 +8,10 @@ import { Circle, Fill, Style } from 'ol/style';
 import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
 import { batch, useSelector } from 'react-redux';
-import moment from 'moment';
 import MapPopup from './OpenLayerMapPopup';
 import SideBar from './OpenLayerMapSideBar';
 import { Card, Row, Col } from 'antd';
+import { getFormattedDateYYYYMMDD } from './../../utils/Formatter';
 import './OpenLayerMap.scss';
 
 const OpenLayerMap = props => {
@@ -94,8 +94,7 @@ const OpenLayerMap = props => {
           const r = recovered[i].count;
           const d = deaths[i].count;
           if (all || time.length || c || r || d) {
-            // time.push(confirmed[i].time.replace(/\//g, '-').replace(/ .*/, ''));
-            time.push(moment(confirmed[i].time).format('YYYY-MM-DD'))
+            time.push(getFormattedDateYYYYMMDD(confirmed[i].time))
             confirmedCounts.push(c);
             recoveredCounts.push(r);
             deathsCounts.push(d);

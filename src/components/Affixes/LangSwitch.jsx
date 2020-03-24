@@ -1,7 +1,7 @@
 import React from 'react';
 import { Affix, Tooltip, Button, Row, Col } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import getMsg from './../../utils/getFormattedMessage';
+import { getFormattedMessage } from './../../utils/Formatter';
 
 export default props => {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ export default props => {
         <Col className='affix-col' span={24}>
           <Tooltip
             placement='left'
-            title={getMsg('affix.lang')}
+            title={getFormattedMessage('affix.lang')}
             mouseEnterDelay={0.5}
           >
             <Button

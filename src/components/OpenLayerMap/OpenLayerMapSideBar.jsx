@@ -1,7 +1,7 @@
 import React from 'react';
 import { List } from 'antd';
 import { useSelector } from 'react-redux';
-import getMsg from '../../utils/getFormattedMessage';
+import { getFormattedMessage } from '../../utils/Formatter';
 
 const OpenLayerMapSideBar = props => {
   const features = useSelector(state => state.features);
@@ -43,19 +43,19 @@ const OpenLayerMapSideBar = props => {
             <List.Item.Meta
               title={
                 <>
-                  {province ? getMsg(`area.${province}`, {}, province) : null}{province ? ', ' : null}{getMsg(`area.${country}`, {}, country)}
+                  {province ? getFormattedMessage(`area.${province}`, {}, province) : null}{province ? ', ' : null}{getFormattedMessage(`area.${country}`, {}, country)}
                 </>
               }
               description={
                 <>
                   <h6>
-                    {getMsg('global.confirmed')}: {item.properties.confirmed[dLen - 1].count}
+                    {getFormattedMessage('global.confirmed')}: {item.properties.confirmed[dLen - 1].count}
                   </h6>
                   <h6>
-                    {getMsg('global.recovered')}: {item.properties.recovered[dLen - 1].count}
+                    {getFormattedMessage('global.recovered')}: {item.properties.recovered[dLen - 1].count}
                   </h6>
                   <h6>
-                    {getMsg('global.deaths')}: {item.properties.deaths[dLen - 1].count}
+                    {getFormattedMessage('global.deaths')}: {item.properties.deaths[dLen - 1].count}
                   </h6>
                 </>
               }
