@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, batch } from 'react-redux';
 import { Card } from 'antd';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
-import { getFormattedDateYYYYMMDD } from './../../utils/Formatter';
+import { getFormatMessage, getFormattedMessage, getFormattedDateYYYYMMDD } from './../../utils/Formatter';
 
 const WorldwideChart = props => {
   const timeSeries = useSelector(state => state.timeSeries);
   const isLoading = useSelector(state => state.isLoading);
+  const locale = useSelector(state => state.locale);
   const { Meta } = Card;
-  const [sortedData, setSortedData] = useState([]);
+  const [dataLabel, setDataLabel] = useState([]);
   const [renderData, setRenderData] = useState([]);
   const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
+    const letters = '456789ABCDEF';
     let color = '#';
     for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+      color += letters[Math.floor(Math.random() * 12)];
     }
     return color;
   }
-
 
   useEffect(() => {
     if (!isLoading) {
@@ -47,24 +47,30 @@ const WorldwideChart = props => {
       const dSort = sortData(Object.entries(timeSeries).map(([k, v]) => ({
         name: k,
         data: v.confirmed[v.confirmed.length - 1],
+        label: getFormatMessage(`area.${k}`, locale, k),
       })));
-      console.log(sortData(dSort))
+      const otherLabel = locale === 'en' ? 'OtherArea' : '其他地区';
       batch(() => {
-        setSortedData(dSort);
+        setDataLabel(dSort);
         setRenderData(timeline.map((t, i) => ({
           time: getFormattedDateYYYYMMDD(t),
-          ...dSort.slice(0, 11).reduce((acc, cur) => ({ ...acc, [cur.name]: timeSeries[cur.name].confirmed[i] }), {}),
-          ...dSort.slice(11).reduce((acc, cur) => ({ OtherArea: acc.OtherArea + timeSeries[cur.name].confirmed[i] }), { OtherArea: 0 }),
+          ...dSort.slice(0, 11).reduce((acc, cur) => ({ ...acc, [cur.label]: timeSeries[cur.name].confirmed[i] }), {}),
+          ...dSort.slice(11).reduce((acc, cur) => ({ otherLabel: acc[otherLabel] + timeSeries[cur.name].confirmed[i] }), { [otherLabel]: 0 }),
         })));
       });
     }
-  }, [isLoading, timeSeries]);
+  }, [isLoading, timeSeries, locale]);
 
   return (
     <Card loading={isLoading}>
       <Meta
+        title={
+          <h6>
+            {getFormattedMessage('chart.title')}
+          </h6>
+        }
         description={
-          <ResponsiveContainer width='80%' height={600}>
+          <ResponsiveContainer width='100%' height={600}>
             <LineChart
               data={renderData}
               margin={{ top: 16, right: 10, bottom: 4, left: -10 }}
@@ -83,31 +89,29 @@ const WorldwideChart = props => {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
                   border: 'none',
                 }}
               />
               <Legend />
-              <CartesianGrid vertical={false} />
-              {sortedData.slice(0, 11).map(d =>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              {dataLabel.slice(0, 11).map(d =>
                 <Line
                   key={`line-char-${d.name}`}
                   type="natural"
-                  dataKey={d.name}
+                  dataKey={d.label}
                   stroke={getRandomColor()}
                   strokeWidth={2}
                   dot={false}
-                  name={d.name}
                 />
               )}
               <Line
                 key={'line-char-OtherArea'}
                 type="natural"
-                dataKey='OtherArea'
+                dataKey={locale === 'en' ? 'OtherArea' : '其他地区'}
                 stroke={getRandomColor()}
                 strokeWidth={2}
                 dot={false}
-                name={'OtherArea'}
               />
             </LineChart>
           </ResponsiveContainer>
