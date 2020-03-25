@@ -56,7 +56,7 @@ const DataTableChart = props => {
       />
       <Tooltip
         contentStyle={{
-          backgroundColor: 'rbga(255, 255, 255, 0)',
+          backgroundColor: 'rgba(255, 255, 255, 0)',
           border: 'none',
         }}
       />

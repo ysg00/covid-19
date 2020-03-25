@@ -77,37 +77,38 @@ const DataTable = props => {
         const vA = a.confirmed;
         const vB = b.confirmed;
         if (vA < vB) {
-            return 1;
+          return 1;
         } else if (vA > vB) {
-            return -1;
+          return -1;
         } else {
-            return 0;
+          return 0;
         }
       });
       const dataSource = sortData(Object.entries(latestUpdate).map(([k, v], i) => {
         return {
-        key: `${i}`,
-        area: getFormattedMessage(`area.${k}`, {}, k),
-        confirmed: v.confirmed,
-        increment: v.increment.confirmed,
-        recovered: v.recovered,
-        deaths: v.deaths,
-        lastUpdate: getFormattedDateYYYYMMDD(new Date(v.lastUpdate)),
-        timeseries: (
-          <>
-            {timeSeries[k]
-              ? <Popover
-                placement='topRight'
-                content={<DataTableChart {...timeSeries[k]} />} 
-                trigger='click'
-              >
-                <Button shape='circle' icon={<SearchOutlined />} />
-              </Popover>
-              : getFormattedMessage('table.cell.nodata')
-            }
-          </>
-        ),
-      }}));
+          key: `${i}`,
+          area: getFormattedMessage(`area.${k}`, {}, k),
+          confirmed: v.confirmed,
+          increment: v.increment.confirmed,
+          recovered: v.recovered,
+          deaths: v.deaths,
+          lastUpdate: getFormattedDateYYYYMMDD(new Date(v.lastUpdate)),
+          timeseries: (
+            <>
+              {timeSeries[k]
+                ? <Popover
+                  placement='topRight'
+                  content={<DataTableChart {...timeSeries[k]} />}
+                  trigger='click'
+                >
+                  <Button shape='circle' icon={<SearchOutlined />} />
+                </Popover>
+                : getFormattedMessage('table.cell.nodata')
+              }
+            </>
+          ),
+        }
+      }));
       batch(() => {
         setTableData(dataSource);
         setRenderData(dataSource);
@@ -145,7 +146,7 @@ const DataTable = props => {
                         {timeSeries[v]
                           ? <Popover
                             placement='topRight'
-                            content={<DataTableChart {...timeSeries[v]} />} 
+                            content={<DataTableChart {...timeSeries[v]} />}
                             trigger='click'
                           >
                             <Button shape='circle' icon={<SearchOutlined />} />
@@ -159,7 +160,7 @@ const DataTable = props => {
               >
                 <Option key='Showall' value=''>{getFormattedMessage('table.select.showall')}</Option>
                 <Option key='Worldwide' value='Worldwide'>{getFormattedMessage('area.Worldwide')}</Option>
-                {Object.keys(latestUpdate).sort().map(k => 
+                {Object.keys(latestUpdate).sort().map(k =>
                   k === 'Worldwide' ? null : <Option key={k} value={k}>{getFormattedMessage(`area.${k}`, {}, k)}</Option>
                 )}
               </Select>
