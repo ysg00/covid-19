@@ -27,12 +27,6 @@ export default ({ children }) => {
       // handle special case due to the data
       return (
         (
-          country === 'US' 
-            &&(
-              ( province !== '' && /.*, [A-Z][A-Z] ?/.test(province)) 
-                || province === 'Washington, D.C.'
-              )
-        ) || (
           country === 'Australia'
             && province === 'From Diamond Princess'
         ) || (
@@ -178,9 +172,6 @@ export default ({ children }) => {
           if (latestUpdate[k] &&  timeSeries[k]) {
             const dLen = timeSeries[k].confirmed.length-1;
             let del = false;
-            let dLenConfirmed = -1;
-            let dLenRecovered = -1;
-            let dLenDeaths = -1;
             if (timeSeries[k].confirmed) {
               timeSeries[k].confirmed[dLen] = latestUpdate[k].confirmed;
             } else {
@@ -203,12 +194,8 @@ export default ({ children }) => {
             delete timeSeries[k];
           }
         });
-        console.log(timeSeries, latestUpdate, geoFeatures);
         batch(() => {
-          dispatch({ type: 'UPDATE_TIMESERIES', timeSeries: {
-            ...timeSeries,
-            Worldwide: timeSeriesWorldwide,
-          }});
+          dispatch({ type: 'UPDATE_TIMESERIES', timeSeries });
           dispatch({ type: 'UPDATE_LATESTUPDATE', latestUpdate });
           dispatch({ type: 'UPDATE_FEATURES', features: geoFeatures });
           dispatch({ type: 'UPDATE_FEATUREIDX', featureIdx });
