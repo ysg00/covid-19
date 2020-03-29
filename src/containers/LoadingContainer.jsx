@@ -18,9 +18,9 @@ export default ({ children }) => {
     const yesterday = getFormattedDateMMDDYYYY(new Date(new Date().setDate(new Date().getDate() - 1)));
     const urls = [
       'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/ncov_cases/FeatureServer/2/query?where=1%3D1&outFields=*&f=json',
-      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv',
-      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv',
-      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv',
+      'https://raw.githubusercontent.com/ysg00/covid-19/dev/src/data/confirmed_timeseries.csv',
+      'https://raw.githubusercontent.com/ysg00/covid-19/dev/src/data/recovered_timeseries.csv',
+      'https://raw.githubusercontent.com/ysg00/covid-19/dev/src/data/deaths_timeseries.csv',
       `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/${yesterday}.csv`,
     ];
     const speciallyHandleCondition = (country, province) => {
@@ -30,12 +30,14 @@ export default ({ children }) => {
           country === 'US' 
             &&(
               ( province !== '' && /.*, [A-Z][A-Z] ?/.test(province)) 
-                || province === 'Washington, D.C.' 
-                || province === 'US'
+                || province === 'Washington, D.C.'
               )
         ) || (
           country === 'Australia'
             && province === 'From Diamond Princess'
+        ) || (
+          country === 'Canada'
+            && province === 'Recovered'
         )
       );
     };
@@ -50,6 +52,10 @@ export default ({ children }) => {
               time: new Date(header[ii + 4]),
               count: count === '' ? parseInt(arr[ii + 3]) : parseInt(count),
             }));
+            const dLen = features[currentFeatureIdx].properties.confirmed.length;
+            if (!features[currentFeatureIdx].properties[dataKey][dLen-1]) {
+              features[currentFeatureIdx].properties[dataKey][dLen-1] = features[currentFeatureIdx].properties[dataKey][dLen-2]
+            }
           } else {
             featureIdx[`${arr[1]}-${arr[0]}`] = globalIdx;
             features.push({
@@ -114,6 +120,12 @@ export default ({ children }) => {
       } else if (idx === 2) {
         generateData(csvData, 'deaths')
       } else {
+        const geoFeatures = [];
+        features.forEach(f => {
+          if (f.properties.confirmed && f.properties.recovered && f.properties.deaths) {
+            geoFeatures.push(f);
+          }
+        });
         const worldwideInc = {
           confirmed: 0,
           recovered: 0,
@@ -163,22 +175,42 @@ export default ({ children }) => {
           Worldwide: timeSeriesWorldwide,
         });
         Object.keys(timeSeries).forEach(k => {
-          if (latestUpdate[k]) {
-            const dLen = timeSeries[k].confirmed.length;
-            timeSeries[k].confirmed[dLen-1] = latestUpdate[k].confirmed;
-            timeSeries[k].recovered[dLen-1] = latestUpdate[k].recovered;
-            timeSeries[k].deaths[dLen-1] = latestUpdate[k].deaths;
+          if (latestUpdate[k] &&  timeSeries[k]) {
+            const dLen = timeSeries[k].confirmed.length-1;
+            let del = false;
+            let dLenConfirmed = -1;
+            let dLenRecovered = -1;
+            let dLenDeaths = -1;
+            if (timeSeries[k].confirmed) {
+              timeSeries[k].confirmed[dLen] = latestUpdate[k].confirmed;
+            } else {
+              del = true;
+            }
+            if (timeSeries[k].recovered) {
+              timeSeries[k].recovered[dLen] = latestUpdate[k].recovered;
+            } else {
+              timeSeries[k].recovered = Array(dLen).fill(0);
+            }
+            if (timeSeries[k].deaths) {
+              timeSeries[k].deaths[dLen] = latestUpdate[k].deaths;
+            } else {
+              timeSeries[k].deaths = Array(dLen).fill(0);
+            }
+            if (del) {
+              delete timeSeries[k];
+            }
           } else {
             delete timeSeries[k];
           }
         });
+        console.log(timeSeries, latestUpdate, geoFeatures);
         batch(() => {
           dispatch({ type: 'UPDATE_TIMESERIES', timeSeries: {
             ...timeSeries,
             Worldwide: timeSeriesWorldwide,
           }});
           dispatch({ type: 'UPDATE_LATESTUPDATE', latestUpdate });
-          dispatch({ type: 'UPDATE_FEATURES', features });
+          dispatch({ type: 'UPDATE_FEATURES', features: geoFeatures });
           dispatch({ type: 'UPDATE_FEATUREIDX', featureIdx });
         });
         dispatch({ type: 'DONE_LOADING'});

@@ -11,5 +11,3 @@ export default ({ children }) => {
     </IntlProvider>
   );
 };
-
-
