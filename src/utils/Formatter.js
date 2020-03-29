@@ -27,7 +27,6 @@ export const getFormattedMessage = (id, values = {}, original = '') => (
 
 export const getFormatMessage = (id, locale, original = '') =>
 {
-  console.log(id)
   return lang[locale][id]
   ? lang[locale][id]
   : lang['en'][id]

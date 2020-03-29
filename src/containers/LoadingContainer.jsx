@@ -43,7 +43,7 @@ export default ({ children }) => {
           const currentFeatureIdx = featureIdx[`${arr[1]}-${arr[0]}`];
           if (currentFeatureIdx !== undefined) {
             features[currentFeatureIdx].properties[dataKey] = arr.slice(4).map((count, ii) => ({
-              time: new Date(header[ii + 4]),
+              time: new Date(header[ii + 4] + ' 00:00'),
               count: count === '' ? parseInt(arr[ii + 3]) : parseInt(count),
             }));
             const dLen = features[currentFeatureIdx].properties.confirmed.length;
@@ -63,7 +63,7 @@ export default ({ children }) => {
                 country: arr[1],
                 province: arr[0],
                 [dataKey]: arr.slice(4).map((count, ii) => ({
-                  time: new Date(header[ii + 4]),
+                  time: new Date(header[ii + 4] + ' 00:00'),
                   count: count === '' ? parseInt(arr[ii + 3]) : parseInt(count),
                 })),
               }
@@ -82,7 +82,7 @@ export default ({ children }) => {
             }
             else {
               timeSeries[arr[1]] = {
-                time: [...header.slice(4)].map(d => new Date(d)),
+                time: [...header.slice(4)].map(d => new Date(d + ' 00:00')),
                 [dataKey]: [...arr.slice(4)].map(d => parseInt(d)),
               };
             }
@@ -93,7 +93,7 @@ export default ({ children }) => {
             } else {
               const dLen = arr.length-4;
               Object.assign(timeSeriesWorldwide, {
-                time: [...header.slice(4)].map(d => new Date(d)),
+                time: [...header.slice(4)].map(d => new Date(d + ' 00:00')),
                 confirmed: Array(dLen).fill(0),
                 recovered: Array(dLen).fill(0),
                 deaths: Array(dLen).fill(0),
