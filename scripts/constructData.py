@@ -117,12 +117,12 @@ def pull_newest_data():
           placeholder = ','.join(['?']*len(data[0]))
           c.executemany(f'INSERT INTO {table} VALUES ({placeholder})', data)
 
-  for table in ['CONFIRMED', 'RECOVERED', 'DEATHS']:
-    c.execute(f'select * from {table}')
-    for row in c.fetchall():
-      pro, cou, _, _, *data = row
-      if row[-1] is None:
-        c.execute(f'UPDATE {table} SET "2020-03-28"="{row[-2]}" where country="{cou}" and province="{pro}"')
+  # for table in ['CONFIRMED', 'RECOVERED', 'DEATHS']:
+  #   c.execute(f'select * from {table}')
+  #   for row in c.fetchall():
+  #     pro, cou, _, _, *data = row
+  #     if row[-1] is None:
+  #       c.execute(f'UPDATE {table} SET "2020-03-28"="{row[-2]}" where country="{cou}" and province="{pro}"')
 
 
 
