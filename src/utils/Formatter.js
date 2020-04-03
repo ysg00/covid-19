@@ -6,11 +6,11 @@ export const getCapitalizedString = str => str[0].toUpperCase() + str.slice(1);
 
 export const getFormattedDateYYYYMMDD = date => `${date.getFullYear()}-${date.getMonth() < 9
   ? `0${date.getMonth() + 1}`
-  : date.getMonth() + 1}-${date.getDate()}`;
+  : date.getMonth() + 1}-${date.getDate() <= 10 ? `0${date.getDate()}` : date.getDate()}`;
 
 export const getFormattedDateMMDDYYYY = date => `${date.getMonth() < 9
   ? `0${date.getMonth() + 1}`
-  : date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
+  : date.getMonth() + 1}-${date.getDate() <= 10 ? `0${date.getDate()}` : date.getDate()}-${date.getFullYear()}`;
 
 export const getFormattedMessage = (id, values = {}, original = '') => (
   <>
