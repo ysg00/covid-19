@@ -18,9 +18,11 @@ export default ({ children }) => {
     const yesterday = getFormattedDateMMDDYYYY(new Date(new Date().setDate(new Date().getDate() - 1)));
     const urls = [
       'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/ncov_cases/FeatureServer/2/query?where=1%3D1&outFields=*&f=json',
-      'https://raw.githubusercontent.com/ysg00/covid-19/dev/scripts/data/confirmed_timeseries.csv',
-      'https://raw.githubusercontent.com/ysg00/covid-19/dev/scripts/data/recovered_timeseries.csv',
-      'https://raw.githubusercontent.com/ysg00/covid-19/dev/scripts/data/deaths_timeseries.csv',
+      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
+      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
+      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
+      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv',
+      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv',
       `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/${yesterday}.csv`,
     ];
     const speciallyHandleCondition = (country, province) => {
@@ -28,10 +30,10 @@ export default ({ children }) => {
       return (
         (
           country === 'Australia'
-            && province === 'From Diamond Princess'
+          && province === 'From Diamond Princess'
         ) || (
           country === 'Canada'
-            && province === 'Recovered'
+          && province === 'Recovered'
         )
       );
     };
@@ -47,8 +49,8 @@ export default ({ children }) => {
               count: count === '' ? parseInt(arr[ii + 3]) : parseInt(count),
             }));
             const dLen = features[currentFeatureIdx].properties.confirmed.length;
-            if (!features[currentFeatureIdx].properties[dataKey][dLen-1]) {
-              features[currentFeatureIdx].properties[dataKey][dLen-1] = features[currentFeatureIdx].properties[dataKey][dLen-2]
+            if (!features[currentFeatureIdx].properties[dataKey][dLen - 1]) {
+              features[currentFeatureIdx].properties[dataKey][dLen - 1] = features[currentFeatureIdx].properties[dataKey][dLen - 2]
             }
           } else {
             featureIdx[`${arr[1]}-${arr[0]}`] = globalIdx;
@@ -74,7 +76,7 @@ export default ({ children }) => {
             if (timeSeries[arr[1]]) {
               if (timeSeries[arr[1]][dataKey]) {
                 timeSeries[arr[1]][dataKey].forEach((dk, ii) => {
-                  timeSeries[arr[1]][dataKey][ii] = dk + parseInt(arr[ii+4])
+                  timeSeries[arr[1]][dataKey][ii] = dk + parseInt(arr[ii + 4])
                 });
               } else {
                 timeSeries[arr[1]][dataKey] = [...arr.slice(4)].map(d => parseInt(d));
@@ -88,10 +90,10 @@ export default ({ children }) => {
             }
             if (Object.keys(timeSeriesWorldwide).length) {
               timeSeriesWorldwide[dataKey].forEach((dk, ii) => {
-                timeSeriesWorldwide[dataKey][ii] = dk + parseInt(arr[ii+4])
+                timeSeriesWorldwide[dataKey][ii] = dk + parseInt(arr[ii + 4])
               });
             } else {
-              const dLen = arr.length-4;
+              const dLen = arr.length - 4;
               Object.assign(timeSeriesWorldwide, {
                 time: [...header.slice(4)].map(d => new Date(d + ' 00:00')),
                 confirmed: Array(dLen).fill(0),
@@ -104,7 +106,26 @@ export default ({ children }) => {
         }
       });
     };
-
+    const generateUsData = csv => {
+      const dic = {};
+      const header = csv[0].slice(6)
+      header.splice(4, 1)
+      csv.slice(1).forEach((arr, i) => {
+        arr = arr.slice(6);
+        arr.splice(4, 1);
+        if (arr[1]) {
+          const key = `${arr[1]}-${arr[0]}`;
+          if (dic[key]) {
+            dic[key].slice(4).forEach((_, ii) => {
+              dic[key][ii + 4] = parseInt(dic[key][ii + 4]) + parseInt(arr[ii + 4]);
+            })
+          } else {
+            dic[key] = [...arr];
+          }
+        }
+      });
+      return [header, ...Object.values(dic)];
+    };
     const handleResTimeSeries = res => {
       const { csvData, idx } = res;
       if (idx === 0) {
@@ -113,8 +134,21 @@ export default ({ children }) => {
         generateData(csvData, 'recovered')
       } else if (idx === 2) {
         generateData(csvData, 'deaths')
+      } else if (idx === 3) {
+        const usd = generateUsData(csvData);
+        generateData(usd, 'confirmed')
+        csvData.slice(1).forEach((arr, i) => {
+          arr.slice(11).forEach((_, j) => {
+            csvData[i][j + 11] = 0;
+          });
+        });
+        generateData(generateUsData(csvData), 'recovered')
+      } else if (idx === 4) {
+        csvData.forEach((_, i) => csvData[i].splice(11, 1));
+        generateData(generateUsData(csvData), 'deaths')
       } else {
         const geoFeatures = [];
+        console.log(features)
         features.forEach(f => {
           if (f.properties.confirmed && f.properties.recovered && f.properties.deaths) {
             geoFeatures.push(f);
@@ -153,7 +187,7 @@ export default ({ children }) => {
                 recovered: recovered - yesterdayData[k].recovered,
                 deaths: deaths - yesterdayData[k].deaths,
               },
-            };    
+            };
           }
         });
         latestUpdate['Worldwide'] = {
@@ -169,8 +203,8 @@ export default ({ children }) => {
           Worldwide: timeSeriesWorldwide,
         });
         Object.keys(timeSeries).forEach(k => {
-          if (latestUpdate[k] &&  timeSeries[k]) {
-            const dLen = timeSeries[k].confirmed.length-1;
+          if (latestUpdate[k] && timeSeries[k]) {
+            const dLen = timeSeries[k].confirmed.length - 1;
             let del = false;
             if (timeSeries[k].confirmed) {
               timeSeries[k].confirmed[dLen] = latestUpdate[k].confirmed;
@@ -200,7 +234,7 @@ export default ({ children }) => {
           dispatch({ type: 'UPDATE_FEATURES', features: geoFeatures });
           dispatch({ type: 'UPDATE_FEATUREIDX', featureIdx });
         });
-        dispatch({ type: 'DONE_LOADING'});
+        dispatch({ type: 'DONE_LOADING' });
       }
     };
 
@@ -246,6 +280,16 @@ export default ({ children }) => {
                 Papa.parse(t, {
                   complete: e => handleResTimeSeries({ csvData: e.data, idx: 3 }),
                 });
+                res[5].text().then(t => {
+                  Papa.parse(t, {
+                    complete: e => handleResTimeSeries({ csvData: e.data, idx: 4 }),
+                  });
+                  res[6].text().then(t => {
+                    Papa.parse(t, {
+                      complete: e => handleResTimeSeries({ csvData: e.data, idx: 5 }),
+                    });
+                  }).catch(e => console.log(e));
+                }).catch(e => console.log(e));
               }).catch(e => console.log(e));
             }).catch(e => console.log(e));
           }).catch(e => console.log(e));

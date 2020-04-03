@@ -21,7 +21,7 @@ const App = props => {
         <Content style={{ padding: '0 50px' }}>
           <Row justify='center'>
             <Col id='main-content' span={20}>
-              <CarouselData />
+              {/* <CarouselData /> */}
               <OpenLayerMap />
               <Row>
                 <Col span={18}>
