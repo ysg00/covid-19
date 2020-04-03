@@ -88,11 +88,16 @@ def clean_us_data(condic, deadic, recdic, pro, con, dea, rec, _lat, _long):
 
 def clean_data():
   for table in ['CONFIRMED', 'RECOVERED', 'DEATHS']:
+    cursor = c.execute(f'select * from {table}')
+    names = [description[0] for description in cursor.description]
     c.execute(f'select * from {table}')
     for row in c.fetchall():
       pro, cou, _lat, _long, *data = row
       if row[-1] is None:
-        c.execute(f'DELETE FROM {table} WHERE province="{pro}" and country="{cou}"')
+        if row[-2] is None:
+          c.execute(f'DELETE FROM {table} WHERE province="{pro}" and country="{cou}"')
+        else:
+          c.execute(f'UPDATE {table} SET "{names[-1]}"="{row[-2]}" WHERE province="{pro}" and country="{cou}"')
       if _lat is None or _long is None:
         c.execute(f'DELETE FROM {table} WHERE province="{pro}" and country="{cou}"')
         
@@ -109,7 +114,7 @@ def format_date(d):
   day = dd[1] if int(dd[1]) >= 10 else f'0{dd[1]}'
   return f'2020-{month}-{day}'
 
-def pull_newest_data():
+def pull_timeserise_data():
   with requests.Session() as s:
     for table in ['CONFIRMED', 'RECOVERED', 'DEATHS']:
       r = s.get(f'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_{table.lower()}_global.csv')
@@ -146,7 +151,7 @@ c = conn.cursor()
 drop_table()
 create_table()
 
-pull_newest_data()
+pull_timeserise_data()
 
 st = datetime.strptime('2020-01-22', '%Y-%m-%d')
 et = datetime.strptime('2020-03-01', '%Y-%m-%d')
