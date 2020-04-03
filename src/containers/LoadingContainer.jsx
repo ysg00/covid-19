@@ -18,9 +18,9 @@ export default ({ children }) => {
     const yesterday = getFormattedDateMMDDYYYY(new Date(new Date().setDate(new Date().getDate() - 1)));
     const urls = [
       'https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/ncov_cases/FeatureServer/2/query?where=1%3D1&outFields=*&f=json',
-      'https://raw.githubusercontent.com/ysg00/covid-19/dev/src/data/confirmed_timeseries.csv',
-      'https://raw.githubusercontent.com/ysg00/covid-19/dev/src/data/recovered_timeseries.csv',
-      'https://raw.githubusercontent.com/ysg00/covid-19/dev/src/data/deaths_timeseries.csv',
+      'https://raw.githubusercontent.com/ysg00/covid-19/dev/scripts/data/confirmed_timeseries.csv',
+      'https://raw.githubusercontent.com/ysg00/covid-19/dev/scripts/data/recovered_timeseries.csv',
+      'https://raw.githubusercontent.com/ysg00/covid-19/dev/scripts/data/deaths_timeseries.csv',
       `https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/${yesterday}.csv`,
     ];
     const speciallyHandleCondition = (country, province) => {
