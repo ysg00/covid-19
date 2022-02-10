@@ -17,7 +17,7 @@
     "fibers": "^4.0.2",
     "gh-pages": "^2.2.0",
     "jquery": "^3.4.1",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "ol": "^6.2.1",
     "papaparse": "^5.1.1",
     "popper.js": "^1.16.1",
