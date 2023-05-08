@@ -16,7 +16,7 @@
     "eslint-plugin-flowtype": "^4.6.0",
     "fibers": "^4.0.2",
     "gh-pages": "^2.2.0",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "node-sass": "^4.13.1",
     "ol": "^6.2.1",
     "papaparse": "^5.1.1",
